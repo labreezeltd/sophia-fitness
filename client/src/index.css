@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   SOPHIA FITNESS — Huberman Protocol Tracker
+   Palette: Bold burnt-orange accent, dark charcoal surfaces
+   Energy, focus, and precision.
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Backgrounds */
+    --background: 24 10% 97%;
+    --foreground: 20 14% 10%;
+
+    /* Cards / Surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 10%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+
+    /* Primary — Burnt orange (energy, intensity) */
+    --primary: 18 86% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 24 10% 93%;
+    --secondary-foreground: 20 14% 20%;
+
+    /* Muted */
+    --muted: 24 8% 92%;
+    --muted-foreground: 20 6% 46%;
+
+    /* Accent — warm amber */
+    --accent: 36 92% 58%;
+    --accent-foreground: 20 14% 10%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border & Input */
+    --border: 24 8% 85%;
+    --input: 24 8% 85%;
+
+    /* Ring */
+    --ring: 18 86% 52%;
+
+    /* Chart colors */
+    --chart-1: 18 86% 52%;
+    --chart-2: 36 92% 58%;
+    --chart-3: 142 72% 40%;
+    --chart-4: 210 80% 52%;
+    --chart-5: 280 60% 55%;
+
+    --radius: 0.625rem;
+
+    /* Custom tokens */
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
+    --shadow-strength: 0 4px 20px oklch(0.3 0.08 40 / 0.1);
+    --shadow-glow: 0 0 24px oklch(0.6 0.15 40 / 0.15);
+  }
+
+  .dark {
+    /* Dark charcoal — like a serious gym */
+    --background: 220 13% 9%;
+    --foreground: 30 8% 88%;
+
+    --card: 220 13% 12%;
+    --card-foreground: 30 8% 88%;
+
+    --popover: 220 13% 12%;
+    --popover-foreground: 30 8% 88%;
+
+    /* Primary — brighter orange in dark mode */
+    --primary: 18 90% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 10% 18%;
+    --secondary-foreground: 30 8% 80%;
+
+    --muted: 220 10% 16%;
+    --muted-foreground: 220 5% 52%;
+
+    --accent: 36 88% 62%;
+    --accent-foreground: 220 13% 9%;
+
+    --destructive: 0 72% 56%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 22%;
+    --input: 220 10% 22%;
+
+    --ring: 18 90% 58%;
+
+    --chart-1: 18 90% 58%;
+    --chart-2: 36 88% 62%;
+    --chart-3: 142 65% 50%;
+    --chart-4: 210 80% 60%;
+    --chart-5: 280 60% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    min-height: 100dvh;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  p, li {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: hsl(18 86% 52% / 0.25);
+  }
+}
+
+/* Glow effect for primary elements */
+.glow-orange {
+  box-shadow: 0 0 20px hsl(18 86% 52% / 0.3);
+}
+
+/* Stat card hover */
+.stat-card {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px hsl(18 86% 52% / 0.12);
+}
+
+/* Schedule badge */
+.schedule-a {
+  background: hsl(18 86% 52% / 0.12);
+  color: hsl(18 86% 40%);
+  border: 1px solid hsl(18 86% 52% / 0.25);
+}
+.dark .schedule-a {
+  background: hsl(18 90% 58% / 0.15);
+  color: hsl(18 90% 70%);
+  border: 1px solid hsl(18 90% 58% / 0.3);
+}
+.schedule-b {
+  background: hsl(36 92% 58% / 0.12);
+  color: hsl(36 92% 38%);
+  border: 1px solid hsl(36 92% 58% / 0.25);
+}
+.dark .schedule-b {
+  background: hsl(36 88% 62% / 0.15);
+  color: hsl(36 88% 72%);
+  border: 1px solid hsl(36 88% 62% / 0.3);
+}
+
+/* Progress ring animation */
+@keyframes spin-in {
+  from { stroke-dashoffset: 283; }
+}
+
+/* Pulse for active workout */
+@keyframes pulse-ring {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.pulse-active {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Completed checkmark flash */
+@keyframes check-flash {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.check-appear {
+  animation: check-flash 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 999px; }
+
+/* Sidebar active item */
+.nav-active {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
