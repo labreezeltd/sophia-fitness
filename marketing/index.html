@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aloha Luau Co. — Coconut & Shell Bras, Leis & Coconut Cups</title>
+  <meta name="description" content="Turn any party into a tropical paradise. Shop coconut bras, seashell bras, rainbow leis and coconut cups — the complete Hawaiian luau costume kit. Fast shipping, party-ready in days." />
+
+  <!-- Open Graph / social preview -->
+  <meta property="og:title" content="Aloha Luau Co. — The Ultimate Hawaiian Party Kit" />
+  <meta property="og:description" content="Coconut bras, seashell bras, rainbow leis & coconut cups. Everything you need for an unforgettable luau." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23ff6f3c'/%3E%3Ctext x='16' y='22' font-size='18' text-anchor='middle'%3E%F0%9F%8C%BA%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    :root {
+      --sunset: #ff6f3c;
+      --sunset-deep: #f2552b;
+      --hibiscus: #ff3d77;
+      --teal: #14b8a6;
+      --teal-deep: #0d9488;
+      --ocean: #0ea5e9;
+      --sand: #fff8f0;
+      --ink: #1f2933;
+      --muted: #6b7280;
+      --gold: #ffb703;
+      --shadow: 0 18px 40px -18px rgba(31,41,51,.35);
+      --radius: 22px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--sand);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .script { font-family: 'Pacifico', cursive; font-weight: 400; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1140px, 92%); margin: 0 auto; }
+    section { padding: 84px 0; }
+    h1, h2, h3 { line-height: 1.15; }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1.05rem;
+      padding: 16px 34px; border-radius: 999px; border: none; cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+      box-shadow: 0 12px 24px -10px rgba(242,85,43,.7);
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--sunset), var(--hibiscus)); color: #fff; }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 18px 30px -10px rgba(255,61,119,.7); }
+    .btn-ghost { background: #fff; color: var(--ink); box-shadow: var(--shadow); }
+    .btn-ghost:hover { transform: translateY(-3px); }
+
+    /* ---------- Announcement bar ---------- */
+    .topbar {
+      background: linear-gradient(90deg, var(--teal-deep), var(--ocean));
+      color: #fff; text-align: center; font-size: .92rem; font-weight: 600;
+      padding: 10px 14px; letter-spacing: .2px;
+    }
+
+    /* ---------- Nav ---------- */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,248,240,.85); backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .logo { font-size: 1.5rem; color: var(--sunset-deep); display: flex; align-items: center; gap: 8px; }
+    .nav-links { display: flex; gap: 28px; align-items: center; font-weight: 500; font-size: .95rem; }
+    .nav-links a:hover { color: var(--sunset-deep); }
+    .nav-cta { background: var(--ink); color: #fff; padding: 10px 22px; border-radius: 999px; font-weight: 600; }
+    @media (max-width: 760px){ .nav-links a:not(.nav-cta){ display:none; } }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative; overflow: hidden;
+      background:
+        radial-gradient(circle at 80% 10%, rgba(255,183,3,.25), transparent 45%),
+        radial-gradient(circle at 0% 90%, rgba(20,184,166,.22), transparent 45%),
+        linear-gradient(160deg, #fff8f0 0%, #ffe9dd 100%);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: var(--teal-deep); font-weight: 600; font-size: .85rem;
+      padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow); margin-bottom: 22px;
+    }
+    .hero h1 { font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 800; letter-spacing: -1px; }
+    .hero h1 .script { color: var(--hibiscus); display: block; font-size: 1.15em; }
+    .hero p.lead { font-size: 1.18rem; color: var(--muted); margin: 22px 0 30px; max-width: 30ch; }
+    .hero-cta { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .stars { color: var(--gold); letter-spacing: 2px; }
+    .rating-line { display: flex; align-items: center; gap: 10px; margin-top: 26px; font-size: .92rem; color: var(--muted); }
+
+    .hero-visual {
+      position: relative; aspect-ratio: 1/1; border-radius: 30px; overflow: hidden;
+      box-shadow: var(--shadow);
+      background:
+        radial-gradient(circle at 30% 30%, #ffd9a8, transparent 60%),
+        linear-gradient(135deg, var(--sunset), var(--hibiscus));
+    }
+    .img-slot {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; gap: 10px;
+      color: #fff; font-weight: 600; padding: 24px;
+    }
+    .img-slot .emoji { font-size: 3.4rem; }
+    .img-slot small { opacity: .85; font-weight: 500; font-size: .8rem; }
+    .float-badge {
+      position: absolute; bottom: 18px; left: 18px;
+      background: #fff; color: var(--ink); border-radius: 16px; padding: 12px 16px;
+      box-shadow: var(--shadow); font-size: .82rem; font-weight: 600; line-height: 1.3;
+    }
+    .float-badge b { color: var(--sunset-deep); }
+    @media (max-width: 860px){ .hero-grid { grid-template-columns: 1fr; } .hero p.lead{ max-width:none; } }
+
+    /* ---------- Marquee strip ---------- */
+    .strip { background: var(--ink); color: #fff; padding: 18px 0; overflow: hidden; }
+    .strip-inner { display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; font-weight: 600; font-size: .95rem; }
+    .strip-inner span { display: flex; align-items: center; gap: 8px; opacity: .92; }
+
+    /* ---------- Section headers ---------- */
+    .head { text-align: center; max-width: 620px; margin: 0 auto 54px; }
+    .head .eyebrow { color: var(--teal-deep); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: .8rem; }
+    .head h2 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; margin: 10px 0 14px; letter-spacing: -.5px; }
+    .head p { color: var(--muted); font-size: 1.05rem; }
+
+    /* ---------- Product cards ---------- */
+    .products { background: #fff; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+    @media (max-width: 960px){ .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px){ .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--sand); border-radius: var(--radius); overflow: hidden;
+      box-shadow: 0 10px 30px -18px rgba(31,41,51,.4); display: flex; flex-direction: column;
+      transition: transform .18s ease, box-shadow .18s ease; position: relative;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+    .card .tag {
+      position: absolute; top: 14px; left: 14px; z-index: 2;
+      background: var(--hibiscus); color: #fff; font-size: .72rem; font-weight: 700;
+      padding: 5px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .card .tag.best { background: var(--gold); color: var(--ink); }
+    .card-img {
+      aspect-ratio: 1/1;
+      background: linear-gradient(135deg, #ffe0cf, #ffd0e0);
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px;
+      color: var(--sunset-deep); text-align: center; padding: 18px; font-weight: 600;
+    }
+    .card-img .emoji { font-size: 2.8rem; }
+    .card-img small { color: var(--muted); font-weight: 500; font-size: .72rem; }
+    .card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+    .card-body h3 { font-size: 1.12rem; font-weight: 700; }
+    .card-body .desc { color: var(--muted); font-size: .9rem; margin: 6px 0 14px; flex: 1; }
+    .price { display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; }
+    .price .now { font-size: 1.45rem; font-weight: 800; color: var(--ink); }
+    .price .was { color: var(--muted); text-decoration: line-through; font-size: .95rem; }
+    .price .save { background: #e7f9f4; color: var(--teal-deep); font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+    .card .btn { width: 100%; justify-content: center; font-size: .95rem; padding: 13px; }
+
+    /* ---------- Bundle banner ---------- */
+    .bundle {
+      background: linear-gradient(135deg, var(--teal-deep), var(--ocean));
+      color: #fff; border-radius: 28px; padding: 46px; text-align: center; box-shadow: var(--shadow);
+    }
+    .bundle h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; }
+    .bundle .price-row { display: flex; align-items: baseline; gap: 14px; justify-content: center; margin: 18px 0 8px; }
+    .bundle .price-row .now { font-size: 3rem; font-weight: 800; }
+    .bundle .price-row .was { opacity: .7; text-decoration: line-through; font-size: 1.4rem; }
+    .bundle .save-pill { background: var(--gold); color: var(--ink); display: inline-block; padding: 6px 18px; border-radius: 999px; font-weight: 700; margin-bottom: 24px; }
+
+    /* ---------- Benefits ---------- */
+    .benefits-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+    @media (max-width: 760px){ .benefits-grid { grid-template-columns: 1fr; } }
+    .benefit { background: #fff; border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 30px -20px rgba(0,0,0,.4); }
+    .benefit .ico { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; font-size: 1.6rem; background: linear-gradient(135deg, var(--sunset), var(--hibiscus)); margin-bottom: 16px; }
+    .benefit h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+    .benefit p { color: var(--muted); font-size: .95rem; }
+
+    /* ---------- Steps ---------- */
+    .steps { background: #fff; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 30px; }
+    @media (max-width: 760px){ .steps-grid { grid-template-columns: 1fr; } }
+    .step { text-align: center; }
+    .step .num { width: 54px; height: 54px; border-radius: 50%; background: var(--sand); color: var(--sunset-deep); font-weight: 800; font-size: 1.3rem; display: grid; place-items: center; margin: 0 auto 16px; box-shadow: var(--shadow); }
+    .step h3 { font-weight: 700; margin-bottom: 6px; }
+    .step p { color: var(--muted); font-size: .95rem; }
+
+    /* ---------- Reviews ---------- */
+    .reviews-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 26px; }
+    @media (max-width: 860px){ .reviews-grid { grid-template-columns: 1fr; } }
+    .review { background: #fff; border-radius: var(--radius); padding: 28px; box-shadow: 0 10px 30px -20px rgba(0,0,0,.4); }
+    .review .stars { font-size: 1rem; margin-bottom: 12px; }
+    .review p { font-size: .98rem; margin-bottom: 18px; }
+    .reviewer { display: flex; align-items: center; gap: 12px; }
+    .reviewer .av { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--teal), var(--ocean)); display: grid; place-items: center; color: #fff; font-weight: 700; }
+    .reviewer b { display: block; font-size: .92rem; }
+    .reviewer small { color: var(--muted); font-size: .8rem; }
+
+    /* ---------- FAQ ---------- */
+    .faq-wrap { max-width: 760px; margin: 0 auto; }
+    details { background: #fff; border-radius: 16px; padding: 4px 24px; margin-bottom: 14px; box-shadow: 0 8px 24px -18px rgba(0,0,0,.4); }
+    summary { font-weight: 600; cursor: pointer; padding: 18px 0; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 1.5rem; color: var(--sunset-deep); }
+    details[open] summary::after { content: '–'; }
+    details p { color: var(--muted); padding-bottom: 18px; }
+
+    /* ---------- Final CTA ---------- */
+    .final {
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,183,3,.3), transparent 40%),
+        linear-gradient(135deg, var(--sunset), var(--hibiscus));
+      color: #fff; text-align: center;
+    }
+    .final h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; }
+    .final .script { display: block; font-size: 1.1em; }
+    .final p { font-size: 1.15rem; opacity: .95; margin: 18px auto 30px; max-width: 46ch; }
+    .countdown { display: inline-flex; gap: 12px; margin-bottom: 30px; }
+    .countdown div { background: rgba(255,255,255,.15); border-radius: 14px; padding: 12px 18px; min-width: 70px; }
+    .countdown div b { font-size: 1.8rem; display: block; }
+    .countdown div small { font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; opacity: .85; }
+
+    /* ---------- Footer ---------- */
+    footer { background: var(--ink); color: #cbd5e1; padding: 50px 0 30px; }
+    .footer-grid { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
+    footer .logo { color: #fff; }
+    footer a { color: #cbd5e1; font-size: .92rem; display: block; margin-bottom: 8px; }
+    footer a:hover { color: #fff; }
+    .footer-col h4 { color: #fff; font-size: .95rem; margin-bottom: 14px; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding-top: 20px; font-size: .82rem; opacity: .7; text-align: center; }
+
+    /* Image-slot helper note */
+    .note { background:#fffbe6; border:1px dashed var(--gold); color:#8a6d00; font-size:.82rem; border-radius:12px; padding:10px 14px; margin-top:18px; }
+  </style>
+</head>
+<body>
+
+  <!-- Announcement bar -->
+  <div class="topbar">🌴 SUMMER LUAU SALE — Up to 40% OFF + FREE shipping on orders over $35 🌺</div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="wrap nav-inner">
+      <a href="#" class="logo script">Aloha Luau&nbsp;Co.</a>
+      <div class="nav-links">
+        <a href="#shop">Shop</a>
+        <a href="#why">Why Us</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+        <a href="#shop" class="nav-cta">Shop Now</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="wrap hero-grid" style="padding: 70px 0;">
+      <div>
+        <span class="pill">🏖️ #1 Hawaiian Party Kit · 12,000+ parties styled</span>
+        <h1>Turn Any Party Into a <span class="script">Tropical Paradise</span></h1>
+        <p class="lead">Coconut bras, seashell bras, rainbow leis &amp; coconut cups — everything you need for an unforgettable luau, in one box.</p>
+        <div class="hero-cta">
+          <a href="#shop" class="btn btn-primary">Shop the Collection 🌺</a>
+          <a href="#bundle" class="btn btn-ghost">See the Bundle Deal</a>
+        </div>
+        <div class="rating-line">
+          <span class="stars">★★★★★</span>
+          <span><b>4.8/5</b> from 2,300+ happy partygoers</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="img-slot">
+          <span class="emoji">🥥🌺</span>
+          <span>Hero product photo</span>
+          <small>Drop in the lifestyle shot of the full luau set</small>
+        </div>
+        <div class="float-badge">🚚 Order today,<br><b>party-ready by the weekend</b></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Trust strip -->
+  <div class="strip">
+    <div class="wrap strip-inner">
+      <span>✈️ Fast Worldwide Shipping</span>
+      <span>🌺 One-Size-Fits-Most</span>
+      <span>♻️ Reusable &amp; Durable</span>
+      <span>💳 Secure Checkout</span>
+      <span>↩️ 30-Day Easy Returns</span>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <section class="products" id="shop">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Shop the collection</span>
+        <h2>Pick Your Perfect Luau Look</h2>
+        <p>Mix, match and accessorize. Each set ships ready to wear — straight out of the box to the dance floor.</p>
+      </div>
+
+      <div class="grid">
+        <!-- Product 1 -->
+        <div class="card">
+          <span class="tag best">Bestseller</span>
+          <div class="card-img">
+            <span class="emoji">🥥</span>
+            Coconut Bra Set
+            <small>Photo: brown coconut bra + lei + cup</small>
+          </div>
+          <div class="card-body">
+            <h3>Coconut Bra Luau Set</h3>
+            <p class="desc">Classic coconut-shell bra with a rainbow flower lei and matching coconut sipping cup. The complete island look.</p>
+            <div class="price">
+              <span class="now">$19.99</span>
+              <span class="was">$32.99</span>
+              <span class="save">-39%</span>
+            </div>
+            <a href="#" class="btn btn-primary" data-product="coconut-set">Add to Cart</a>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="card">
+          <span class="tag">New</span>
+          <div class="card-img" style="background:linear-gradient(135deg,#e6f6ff,#ffe9f1);color:var(--ocean);">
+            <span class="emoji">🐚</span>
+            Seashell Bra Set
+            <small>Photo: white shell bra + lei + cup</small>
+          </div>
+          <div class="card-body">
+            <h3>Seashell Bra Luau Set</h3>
+            <p class="desc">Mermaid-worthy white seashell bra, rainbow lei necklace, bracelets and a coconut cup. Pure beach goddess energy.</p>
+            <div class="price">
+              <span class="now">$21.99</span>
+              <span class="was">$34.99</span>
+              <span class="save">-37%</span>
+            </div>
+            <a href="#" class="btn btn-primary" data-product="seashell-set">Add to Cart</a>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="card">
+          <div class="card-img" style="background:linear-gradient(135deg,#fff0df,#ffe7cc);color:var(--sunset-deep);">
+            <span class="emoji">🥥🌸</span>
+            Coconut Bra + Cup
+            <small>Photo: coconut bra + coconut cup</small>
+          </div>
+          <div class="card-body">
+            <h3>Coconut Bra &amp; Cup Duo</h3>
+            <p class="desc">The essentials combo — coconut bra plus a flower-topped coconut cup. Sip in style, dance all night.</p>
+            <div class="price">
+              <span class="now">$16.99</span>
+              <span class="was">$26.99</span>
+              <span class="save">-37%</span>
+            </div>
+            <a href="#" class="btn btn-primary" data-product="coconut-duo">Add to Cart</a>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="card">
+          <div class="card-img" style="background:linear-gradient(135deg,#ffe2d1,#ffd6e6);color:var(--hibiscus);">
+            <span class="emoji">🌈🌺</span>
+            Bra + Rainbow Lei
+            <small>Photo: coconut bra + rainbow lei</small>
+          </div>
+          <div class="card-body">
+            <h3>Coconut Bra &amp; Lei Combo</h3>
+            <p class="desc">Coconut bra paired with a vibrant rainbow flower lei. The fastest way to dress up for any tropical theme.</p>
+            <div class="price">
+              <span class="now">$15.99</span>
+              <span class="was">$24.99</span>
+              <span class="save">-36%</span>
+            </div>
+            <a href="#" class="btn btn-primary" data-product="coconut-lei">Add to Cart</a>
+          </div>
+        </div>
+      </div>
+
+      <p class="note">📸 <b>Image slots:</b> each card has a labeled placeholder — replace the coloured blocks with your 4 product photos (provided) and link each “Add to Cart” button to its Shopify product/variant URL.</p>
+    </div>
+  </section>
+
+  <!-- Bundle -->
+  <section id="bundle">
+    <div class="wrap">
+      <div class="bundle">
+        <span class="save-pill">🎉 BEST VALUE — Save 45%</span>
+        <h2>The Ultimate Luau Party Bundle</h2>
+        <p style="opacity:.95;max-width:48ch;margin:14px auto 0;">Coconut bra <b>+</b> seashell bra <b>+</b> 2 rainbow lei sets <b>+</b> 2 coconut cups. Enough to style you and your bestie for the whole night.</p>
+        <div class="price-row">
+          <span class="now">$39.99</span>
+          <span class="was">$72.99</span>
+        </div>
+        <a href="#" class="btn btn-ghost" data-product="ultimate-bundle">Grab the Bundle 🌴</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why us / benefits -->
+  <section id="why" style="background:var(--sand);">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Why Aloha Luau Co.</span>
+        <h2>Party-Ready, Worry-Free</h2>
+        <p>We obsess over the little details so your only job is to have fun.</p>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit">
+          <div class="ico">🌺</div>
+          <h3>One-Size-Fits-Most Comfort</h3>
+          <p>Adjustable tie-back straps and lightweight materials that stay comfy from the first hula to the last song.</p>
+        </div>
+        <div class="benefit">
+          <div class="ico">♻️</div>
+          <h3>Reusable, Not Throwaway</h3>
+          <p>Built to last beyond one night. Pack them away and bring the island vibes to your next party.</p>
+        </div>
+        <div class="benefit">
+          <div class="ico">⚡</div>
+          <h3>Everything In One Box</h3>
+          <p>No hunting across five stores. Bra, lei, bracelets and cup arrive together, ready to wear.</p>
+        </div>
+        <div class="benefit">
+          <div class="ico">🚚</div>
+          <h3>Fast, Tracked Shipping</h3>
+          <p>Order today and get party-ready in days, with tracking every step of the way.</p>
+        </div>
+        <div class="benefit">
+          <div class="ico">📸</div>
+          <h3>Made for the Camera</h3>
+          <p>Bold colours and photogenic details that pop in every group selfie and story.</p>
+        </div>
+        <div class="benefit">
+          <div class="ico">💛</div>
+          <h3>Loved by 12,000+ Parties</h3>
+          <p>From luaus and hen dos to festivals and beach birthdays — we've styled them all.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="steps">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">How it works</span>
+        <h2>From Cart to Conga Line in 3 Steps</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Pick Your Set</h3>
+          <p>Choose a coconut or seashell look — or grab the bundle and share with friends.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>We Ship It Fast</h3>
+          <p>Your kit arrives boxed and ready, with tie-back straps already attached.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Steal the Show</h3>
+          <p>Throw it on, grab your coconut cup and bring the island energy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews / UGC -->
+  <section id="reviews" style="background:var(--sand);">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Real partygoers</span>
+        <h2>The Reviews Are In 🌟</h2>
+        <p>Tagged us in their stories and tipped us off — here's what they said.</p>
+      </div>
+      <div class="reviews-grid">
+        <div class="review">
+          <div class="stars">★★★★★</div>
+          <p>"Wore the seashell set to my friend's hen do and we got SO many compliments. The shells are sturdier than I expected and the lei colours are super bright. Worth every penny!"</p>
+          <div class="reviewer"><div class="av">JL</div><div><b>Jade L.</b><small>Verified Buyer · Hen Party</small></div></div>
+        </div>
+        <div class="review">
+          <div class="stars">★★★★★</div>
+          <p>"Bought the bundle for me and my sister for a beach luau. Arrived in 3 days, fit perfectly and the coconut cups were a huge hit at the bar. Already planning to reuse for festival season."</p>
+          <div class="reviewer"><div class="av">MR</div><div><b>Maya R.</b><small>Verified Buyer · Beach Luau</small></div></div>
+        </div>
+        <div class="review">
+          <div class="stars">★★★★★</div>
+          <p>"Honestly didn't expect much for the price but the coconut bra is really comfy and the tie-back means it actually fits. Best costume purchase I've made for a themed night out."</p>
+          <div class="reviewer"><div class="av">SK</div><div><b>Sophie K.</b><small>Verified Buyer · Themed Party</small></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Good to know</span>
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-wrap">
+        <details open>
+          <summary>What sizes do the bras come in?</summary>
+          <p>Our coconut and seashell bras are one-size-fits-most with adjustable tie-back straps, comfortably fitting most cup sizes from A to DD. The straps tie at the neck and back so you can dial in your perfect fit.</p>
+        </details>
+        <details>
+          <summary>What's included in each set?</summary>
+          <p>It varies by product — check each listing. Sets typically include the bra plus a combination of a rainbow flower lei necklace, matching flower bracelets and a flower-topped coconut sipping cup. The full bundle includes both bras, two lei sets and two cups.</p>
+        </details>
+        <details>
+          <summary>How fast is shipping?</summary>
+          <p>Orders are dispatched within 1 business day. Standard delivery typically arrives in 3–5 business days, with express options at checkout. Every order is tracked, and shipping is free on orders over $35.</p>
+        </details>
+        <details>
+          <summary>Are the coconut cups safe to drink from?</summary>
+          <p>Yes! The coconut cups are food-safe and reusable. Hand-wash with warm soapy water between uses and they're ready for your next island night.</p>
+        </details>
+        <details>
+          <summary>What's your return policy?</summary>
+          <p>We offer 30-day easy returns on unused items in original packaging. If something isn't right, reach out and our team will sort it out, hassle-free.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final">
+    <div class="wrap">
+      <h2>Ready to Bring the <span class="script">Aloha Spirit?</span></h2>
+      <p>The Summer Luau Sale ends soon. Lock in up to 40% off and get party-ready this week.</p>
+      <div class="countdown" id="countdown">
+        <div><b id="cd-h">11</b><small>Hours</small></div>
+        <div><b id="cd-m">42</b><small>Mins</small></div>
+        <div><b id="cd-s">07</b><small>Secs</small></div>
+      </div>
+      <br>
+      <a href="#shop" class="btn btn-ghost" style="font-size:1.15rem;">🌺 Shop the Sale Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div style="max-width:280px;">
+          <div class="logo script" style="font-size:1.5rem;">Aloha Luau Co.</div>
+          <p style="font-size:.9rem;margin-top:10px;">Tropical party essentials that ship fast and last. Bringing the island to your celebration since day one. 🌴</p>
+        </div>
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="#shop">Coconut Bras</a>
+          <a href="#shop">Seashell Bras</a>
+          <a href="#shop">Rainbow Leis</a>
+          <a href="#shop">Coconut Cups</a>
+          <a href="#bundle">Party Bundles</a>
+        </div>
+        <div class="footer-col">
+          <h4>Help</h4>
+          <a href="#faq">FAQ</a>
+          <a href="#">Shipping &amp; Returns</a>
+          <a href="#">Size Guide</a>
+          <a href="#">Track My Order</a>
+          <a href="#">Contact Us</a>
+        </div>
+        <div class="footer-col">
+          <h4>Follow the Fun</h4>
+          <a href="#">📸 Instagram</a>
+          <a href="#">🎵 TikTok</a>
+          <a href="#">👍 Facebook</a>
+          <a href="#">📌 Pinterest</a>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2026 Aloha Luau Co. All rights reserved. · Privacy Policy · Terms of Service</div>
+    </div>
+  </footer>
+
+  <script>
+    // Simple looping countdown for urgency (resets daily-ish, purely visual)
+    (function () {
+      let total = 11 * 3600 + 42 * 60 + 7;
+      const h = document.getElementById('cd-h');
+      const m = document.getElementById('cd-m');
+      const s = document.getElementById('cd-s');
+      const pad = n => String(n).padStart(2, '0');
+      setInterval(() => {
+        total = total > 0 ? total - 1 : 11 * 3600 + 42 * 60 + 7;
+        h.textContent = pad(Math.floor(total / 3600));
+        m.textContent = pad(Math.floor((total % 3600) / 60));
+        s.textContent = pad(total % 60);
+      }, 1000);
+    })();
+
+    // Placeholder add-to-cart hook — wire these to your Shopify checkout/variant URLs
+    document.querySelectorAll('[data-product]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const id = btn.getAttribute('data-product');
+        alert('Connect "' + id + '" to your Shopify product/checkout URL. (Replace this handler.)');
+      });
+    });
+  </script>
+</body>
+</html>
