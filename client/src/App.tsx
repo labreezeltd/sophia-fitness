@@ -4,27 +4,30 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Sidebar } from "@/components/Sidebar";
-import Dashboard from "@/pages/Dashboard";
-import LogWorkout from "@/pages/LogWorkout";
-import Progress from "@/pages/Progress";
-import Protocol from "@/pages/Protocol";
-import Nutrition from "@/pages/Nutrition";
+import { NavBar } from "@/components/NavBar";
+import Home from "@/pages/Home";
+import Discover from "@/pages/Discover";
+import PartnerDetail from "@/pages/PartnerDetail";
+import Join from "@/pages/Join";
+import MemberCard from "@/pages/MemberCard";
+import ForPartners from "@/pages/ForPartners";
+import Console from "@/pages/Console";
 import NotFound from "@/pages/not-found";
 
 function AppLayout() {
   return (
     <Router hook={useHashLocation}>
-      <div className="flex h-screen bg-background overflow-hidden">
-        <Sidebar />
-        {/* On mobile: push content below the top bar (56px) and above bottom nav (64px) */}
-        <main className="flex-1 overflow-y-auto pt-14 pb-16 md:pt-0 md:pb-0">
+      <div className="flex min-h-screen flex-col bg-background">
+        <NavBar />
+        <main className="flex-1">
           <Switch>
-            <Route path="/" component={Dashboard} />
-            <Route path="/log" component={LogWorkout} />
-            <Route path="/progress" component={Progress} />
-            <Route path="/nutrition" component={Nutrition} />
-            <Route path="/protocol" component={Protocol} />
+            <Route path="/" component={Home} />
+            <Route path="/discover" component={Discover} />
+            <Route path="/partner/:id" component={PartnerDetail} />
+            <Route path="/join" component={Join} />
+            <Route path="/card" component={MemberCard} />
+            <Route path="/partners" component={ForPartners} />
+            <Route path="/console" component={Console} />
             <Route component={NotFound} />
           </Switch>
         </main>

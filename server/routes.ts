@@ -1,109 +1,155 @@
 import type { Express } from "express";
 import { type Server } from "http";
 import { storage } from "./storage";
-import { insertWorkoutSessionSchema, insertExerciseSetSchema, insertPersonalRecordSchema, insertCardioSessionSchema } from "@shared/schema";
+import {
+  partnerApplicationSchema,
+  joinMemberSchema,
+  redeemSchema,
+} from "@shared/schema";
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  // Workout Days (templates)
-  app.get("/api/workout-days", (_req, res) => {
-    const days = storage.getWorkoutDays();
-    res.json(days);
+  // ---- Partners / venues ----
+  app.get("/api/partners", (req, res) => {
+    // Public discovery only shows active venues; ?all=1 returns everything (console).
+    const partners = req.query.all === "1" ? storage.getPartners() : storage.getActivePartners();
+    res.json(partners);
   });
 
-  // Sessions
-  app.get("/api/sessions", (_req, res) => {
-    const sessions = storage.getSessions();
-    res.json(sessions);
+  app.get("/api/partners/:id", (req, res) => {
+    const partner = storage.getPartnerById(parseInt(req.params.id));
+    if (!partner) return res.status(404).json({ message: "Partner not found" });
+    res.json(partner);
   });
 
-  app.get("/api/sessions/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const session = storage.getSessionById(id);
-    if (!session) return res.status(404).json({ error: "Session not found" });
-    res.json(session);
+  // A venue applies to join (public). Lands as 'pending' for the autopilot to vet.
+  app.post("/api/partners/apply", (req, res) => {
+    const result = partnerApplicationSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid application", errors: result.error.flatten() });
+    const a = result.data;
+    const emojiByCategory: Record<string, string> = {
+      restaurant: "🍽️", cafe: "☕", bar: "🍸", bakery: "🥐", dessert: "🍰", takeaway: "🥡",
+    };
+    const partner = storage.createPartner({
+      name: a.name,
+      category: a.category,
+      cuisine: a.cuisine,
+      city: a.city,
+      neighborhood: a.neighborhood,
+      description: a.description,
+      emoji: emojiByCategory[a.category] ?? "🍴",
+      priceRange: "££",
+      rating: 4.5,
+      discountPercent: a.discountPercent,
+      offerText: `${a.discountPercent}% off for Savora members`,
+      plan: "growth",
+      monthlyFee: 49,
+      commissionPercent: 8,
+      status: "pending",
+      featured: false,
+      contactEmail: a.contactEmail,
+      joinedDate: new Date().toISOString().slice(0, 10),
+    });
+    res.status(201).json(partner);
   });
 
-  app.post("/api/sessions", (req, res) => {
-    const result = insertWorkoutSessionSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const session = storage.createSession(result.data);
-    res.status(201).json(session);
-  });
-
-  app.patch("/api/sessions/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const updated = storage.updateSession(id, req.body);
-    if (!updated) return res.status(404).json({ error: "Session not found" });
+  // Console: approve / pause / activate a venue
+  app.patch("/api/partners/:id", (req, res) => {
+    const updated = storage.updatePartner(parseInt(req.params.id), req.body);
+    if (!updated) return res.status(404).json({ message: "Partner not found" });
     res.json(updated);
   });
 
-  app.delete("/api/sessions/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    storage.deleteSetsBySession(id);
-    storage.deleteSession(id);
-    res.json({ success: true });
+  // ---- Members ----
+  app.get("/api/members", (_req, res) => {
+    res.json(storage.getMembers());
   });
 
-  // Exercise Sets
-  app.get("/api/sessions/:id/sets", (req, res) => {
-    const sessionId = parseInt(req.params.id);
-    const sets = storage.getSetsBySession(sessionId);
-    res.json(sets);
+  app.get("/api/members/:id", (req, res) => {
+    const member = storage.getMemberById(parseInt(req.params.id));
+    if (!member) return res.status(404).json({ message: "Member not found" });
+    res.json(member);
   });
 
-  app.post("/api/sets", (req, res) => {
-    const result = insertExerciseSetSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const set = storage.createSet(result.data);
-    res.status(201).json(set);
+  // A customer joins the club (public).
+  app.post("/api/members/join", (req, res) => {
+    const result = joinMemberSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid signup", errors: result.error.flatten() });
+    const d = result.data;
+    const member = storage.createMember({
+      name: d.name,
+      email: d.email,
+      city: d.city,
+      plan: d.plan,
+      membershipFee: d.plan === "annual" ? 79 : 8.99,
+      status: "active",
+      referralCode: storage.genReferralCode(d.name),
+      referredBy: d.referredBy ?? null,
+      acquisitionChannel: d.referredBy ? "referral" : "organic",
+      joinedDate: new Date().toISOString().slice(0, 10),
+    });
+    res.status(201).json(member);
   });
 
-  app.patch("/api/sets/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const updated = storage.updateSet(id, req.body);
-    if (!updated) return res.status(404).json({ error: "Set not found" });
+  // Member's redemption history
+  app.get("/api/members/:id/redemptions", (req, res) => {
+    res.json(storage.getRedemptionsByMember(parseInt(req.params.id)));
+  });
+
+  // ---- Redemptions ----
+  app.get("/api/redemptions", (_req, res) => {
+    res.json(storage.getRedemptions());
+  });
+
+  // A member redeems an offer at a venue → savings for them, commission for us.
+  app.post("/api/redemptions", (req, res) => {
+    const result = redeemSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid redemption", errors: result.error.flatten() });
+    const { memberId, partnerId, billAmount } = result.data;
+
+    const member = storage.getMemberById(memberId);
+    if (!member) return res.status(404).json({ message: "Member not found" });
+    const partner = storage.getPartnerById(partnerId);
+    if (!partner || partner.status !== "active") {
+      return res.status(404).json({ message: "Venue not available" });
+    }
+
+    const round = (n: number) => Math.round(n * 100) / 100;
+    const savedAmount = round(billAmount * (partner.discountPercent / 100));
+    const commissionAmount = round(billAmount * (partner.commissionPercent / 100));
+    const code = `SV-${partner.id}${memberId}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const redemption = storage.createRedemption({
+      memberId,
+      partnerId,
+      partnerName: partner.name,
+      code,
+      billAmount,
+      discountPercent: partner.discountPercent,
+      savedAmount,
+      commissionAmount,
+      date: new Date().toISOString().slice(0, 10),
+    });
+    res.status(201).json(redemption);
+  });
+
+  // ---- Marketing & autopilot ----
+  app.get("/api/campaigns", (_req, res) => {
+    res.json(storage.getCampaigns());
+  });
+
+  app.get("/api/automations", (_req, res) => {
+    res.json(storage.getAutomations());
+  });
+
+  app.patch("/api/automations/:id", (req, res) => {
+    const updated = storage.updateAutomation(parseInt(req.params.id), req.body);
+    if (!updated) return res.status(404).json({ message: "Automation not found" });
     res.json(updated);
   });
 
-  app.delete("/api/sets/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    storage.deleteSet(id);
-    res.json({ success: true });
-  });
-
-  // Personal Records
-  app.get("/api/prs", (_req, res) => {
-    const prs = storage.getPersonalRecords();
-    res.json(prs);
-  });
-
-  app.post("/api/prs", (req, res) => {
-    const result = insertPersonalRecordSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const pr = storage.createPersonalRecord(result.data);
-    res.status(201).json(pr);
-  });
-
-  // Cardio Sessions
-  app.get("/api/cardio", (_req, res) => {
-    const sessions = storage.getCardioSessions();
-    res.json(sessions);
-  });
-
-  app.post("/api/cardio", (req, res) => {
-    const result = insertCardioSessionSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const session = storage.createCardioSession(result.data);
-    res.status(201).json(session);
-  });
-
-  // Stats
-  app.get("/api/stats", (_req, res) => {
-    const weeklyCount = storage.getWeeklySessionCount();
-    const totalWorkouts = storage.getTotalWorkouts();
-    const prs = storage.getPersonalRecords();
-    const sessions = storage.getSessions().slice(0, 10);
-    res.json({ weeklyCount, totalWorkouts, prCount: prs.length, recentSessions: sessions });
+  // ---- Business overview (owner console) ----
+  app.get("/api/overview", (_req, res) => {
+    res.json(storage.getBusinessOverview());
   });
 
   return httpServer;
