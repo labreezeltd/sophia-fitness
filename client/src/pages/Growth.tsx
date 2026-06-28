@@ -3,9 +3,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Rocket, Megaphone, Users2, Inbox, Play, Sparkles, Copy, Send, Mail,
   Plus, ArrowRight, Loader2, Bot, Building2, CircleDollarSign, Wand2,
+  CircleCheck, TriangleAlert,
 } from "lucide-react";
 import type { Partner, Lead, Event, Message } from "@shared/schema";
-import type { BusinessOverview, ContentAsset } from "@/lib/types";
+import type { BusinessOverview, ContentAsset, Integrations } from "@/lib/types";
 import { Footer } from "@/components/Footer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -327,11 +328,14 @@ function AddLeadForm({ onDone }: { onDone: () => void }) {
 function OutboxTab() {
   const { toast } = useToast();
   const { data: messages } = useQuery<Message[]>({ queryKey: ["/api/messages"] });
+  const { data: integrations } = useQuery<Integrations>({ queryKey: ["/api/integrations"] });
   const [openId, setOpenId] = useState<number | null>(null);
 
+  const emailLive = integrations?.email.configured;
+
   const sendAll = useMutation({
-    mutationFn: async () => (await (await apiRequest("POST", "/api/messages/send-all", {})).json()) as { sent: number },
-    onSuccess: (r) => { invalidateGrowth(); toast({ title: "Outbox flushed", description: `${r.sent} message(s) sent.` }); },
+    mutationFn: async () => (await (await apiRequest("POST", "/api/messages/send-all", {})).json()) as { sent: number; simulated: boolean },
+    onSuccess: (r) => { invalidateGrowth(); toast({ title: "Outbox flushed", description: `${r.sent} message(s) ${r.simulated ? "sent (simulated)" : "sent live"}.` }); },
   });
   const markSent = useMutation({
     mutationFn: async (id: number) => await apiRequest("PATCH", `/api/messages/${id}`, { status: "sent" }),
@@ -350,6 +354,21 @@ function OutboxTab() {
         </button>
       }
     >
+      <div className={cn(
+        "mb-4 flex items-start gap-2 rounded-xl border p-3 text-sm",
+        emailLive ? "border-[hsl(162_55%_42%)]/40 bg-[hsl(162_55%_42%)]/10" : "border-[hsl(38_78%_52%)]/40 bg-[hsl(38_78%_52%)]/10",
+      )}>
+        {emailLive
+          ? <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(162_55%_34%)]" />
+          : <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(38_78%_40%)]" />}
+        <div>
+          {emailLive ? (
+            <span>Email connected via <strong>{integrations?.email.provider}</strong> — sending live from <strong>{integrations?.email.from}</strong>.</span>
+          ) : (
+            <span>Email provider not connected — sends are <strong>simulated</strong>. Add <code>RESEND_API_KEY</code> (see SETUP.md) to send real email from {integrations?.company.email ?? "your address"}.</span>
+          )}
+        </div>
+      </div>
       <div className="divide-y divide-border">
         {(messages ?? []).map((m) => (
           <div key={m.id} className="py-3">

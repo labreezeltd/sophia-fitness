@@ -28,3 +28,9 @@ export interface ContentAsset {
   hashtags?: string[];
   cta: string;
 }
+
+export interface Integrations {
+  company: { name: string; email: string };
+  email: { provider: string; configured: boolean; from: string };
+  stripe: { configured: boolean };
+}

@@ -9,6 +9,8 @@ import {
   generateContentSchema,
 } from "@shared/schema";
 import { generateMarketingContent, lifecycleMessage } from "./growth";
+import { sendEmail, emailConfigured, emailProvider } from "./email";
+import { COMPANY } from "@shared/company";
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   // ---- Partners / venues ----
@@ -219,20 +221,46 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(storage.getMessages());
   });
 
-  app.patch("/api/messages/:id", (req, res) => {
-    const updated = storage.updateMessage(parseInt(req.params.id), req.body);
+  // Send a single message now (real email if configured, else simulated).
+  app.patch("/api/messages/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (req.body.status === "sent") {
+      const msg = storage.getMessages().find((m) => m.id === id);
+      if (!msg) return res.status(404).json({ message: "Message not found" });
+      const result = await sendEmail({ to: msg.toEmail, subject: msg.subject, body: msg.body });
+      if (!result.sent) return res.status(502).json({ message: `Send failed: ${result.error}` });
+      const updated = storage.updateMessage(id, { status: "sent" });
+      return res.json({ ...updated, simulated: result.simulated });
+    }
+    const updated = storage.updateMessage(id, req.body);
     if (!updated) return res.status(404).json({ message: "Message not found" });
     res.json(updated);
   });
 
-  // Mark all queued messages as sent (simulates a real send via email provider)
-  app.post("/api/messages/send-all", (_req, res) => {
+  // Flush the outbox — sends every queued message (real or simulated).
+  app.post("/api/messages/send-all", async (_req, res) => {
     const queued = storage.getMessages().filter((m) => m.status === "queued");
-    for (const m of queued) storage.updateMessage(m.id, { status: "sent" });
-    if (queued.length) {
-      storage.logEvent({ type: "automation", category: "ops", message: `Outbox flushed: ${queued.length} message(s) sent.`, createdAt: new Date().toISOString() });
+    let sent = 0, failed = 0;
+    let simulated = false;
+    for (const m of queued) {
+      const r = await sendEmail({ to: m.toEmail, subject: m.subject, body: m.body });
+      if (r.sent) { storage.updateMessage(m.id, { status: "sent" }); sent++; simulated = simulated || r.simulated; }
+      else failed++;
     }
-    res.json({ sent: queued.length });
+    if (sent) {
+      const how = simulated ? "simulated (no email provider connected)" : `sent live via ${emailProvider()}`;
+      storage.logEvent({ type: "automation", category: "ops", message: `Outbox flushed: ${sent} message(s) ${how}.`, createdAt: new Date().toISOString() });
+    }
+    res.json({ sent, failed, simulated });
+  });
+
+  // Integration status — lets the UI show what's connected.
+  app.get("/api/integrations", (_req, res) => {
+    res.json({
+      company: { name: COMPANY.legalName, email: COMPANY.email },
+      email: { provider: emailProvider(), configured: emailConfigured(), from: process.env.EMAIL_FROM || COMPANY.email },
+      stripe: { configured: Boolean(process.env.STRIPE_SECRET_KEY) },
+    });
   });
 
   // Run one tick of the autopilot
