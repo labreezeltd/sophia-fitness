@@ -12,6 +12,9 @@ services:
     healthCheckPath: /
     autoDeploy: true
     envVars:
+      # Pin Node 22 so Vite 7 + the native SQLite module build cleanly.
+      - key: NODE_VERSION
+        value: "22.11.0"
       - key: NODE_ENV
         value: production
       # Add Stripe / email keys here later (see .env.example), or in the dashboard.

@@ -1,6 +1,7 @@
 # Savora — production image
 # Works on any Docker host (Railway, Render, Fly.io, a VPS, etc.)
-FROM node:20-bookworm-slim
+# Node 22 satisfies Vite 7's engine requirement.
+FROM node:22-bookworm-slim
 
 # Build tools for the native SQLite module (better-sqlite3)
 RUN apt-get update \
