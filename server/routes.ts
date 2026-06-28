@@ -10,7 +10,39 @@ import {
 } from "@shared/schema";
 import { generateMarketingContent, lifecycleMessage } from "./growth";
 import { sendEmail, emailConfigured, emailProvider } from "./email";
+import {
+  paymentsConfigured, createCheckoutSession, retrieveSession,
+  verifyWebhook, isProcessed, markProcessed, type CheckoutDraft,
+} from "./payments";
 import { COMPANY } from "@shared/company";
+import type { Member } from "@shared/schema";
+
+// Derive the public base URL of this request (honours APP_URL if set).
+function baseUrlFrom(req: any): string {
+  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
+  const proto = (req.headers["x-forwarded-proto"] as string)?.split(",")[0] || req.protocol || "http";
+  return `${proto}://${req.headers.host}`;
+}
+
+// Create a member from a signup draft + fire the welcome automation.
+function createMemberFromDraft(d: { name: string; email: string; city: string; plan: "monthly" | "annual"; referredBy?: string | null }): Member {
+  const member = storage.createMember({
+    name: d.name,
+    email: d.email,
+    city: d.city,
+    plan: d.plan,
+    membershipFee: d.plan === "annual" ? 79 : 8.99,
+    status: "active",
+    referralCode: storage.genReferralCode(d.name),
+    referredBy: d.referredBy ?? null,
+    acquisitionChannel: d.referredBy ? "referral" : "organic",
+    joinedDate: new Date().toISOString().slice(0, 10),
+  });
+  const welcome = lifecycleMessage("welcome", member.name);
+  storage.createMessage({ audience: "member", kind: "welcome", channel: "email", toName: member.name, toEmail: member.email, subject: welcome.subject, body: welcome.body, status: "queued", createdAt: new Date().toISOString() });
+  storage.logEvent({ type: "growth", category: "acquisition", message: `New member joined: ${member.name} (${member.acquisitionChannel}). Welcome email queued.`, createdAt: new Date().toISOString() });
+  return member;
+}
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   // ---- Partners / venues ----
@@ -76,28 +108,68 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(member);
   });
 
-  // A customer joins the club (public).
+  // A customer joins the club (public). Free path — used when Stripe
+  // isn't configured, or as the fallback after a simulated checkout.
   app.post("/api/members/join", (req, res) => {
     const result = joinMemberSchema.safeParse(req.body);
     if (!result.success) return res.status(400).json({ message: "Invalid signup", errors: result.error.flatten() });
-    const d = result.data;
-    const member = storage.createMember({
-      name: d.name,
-      email: d.email,
-      city: d.city,
-      plan: d.plan,
-      membershipFee: d.plan === "annual" ? 79 : 8.99,
-      status: "active",
-      referralCode: storage.genReferralCode(d.name),
-      referredBy: d.referredBy ?? null,
-      acquisitionChannel: d.referredBy ? "referral" : "organic",
-      joinedDate: new Date().toISOString().slice(0, 10),
-    });
-    // Autopilot: greet the new member + log the acquisition.
-    const welcome = lifecycleMessage("welcome", member.name);
-    storage.createMessage({ audience: "member", kind: "welcome", channel: "email", toName: member.name, toEmail: member.email, subject: welcome.subject, body: welcome.body, status: "queued", createdAt: new Date().toISOString() });
-    storage.logEvent({ type: "growth", category: "acquisition", message: `New member joined: ${member.name} (${member.acquisitionChannel}). Welcome email queued.`, createdAt: new Date().toISOString() });
+    const member = createMemberFromDraft(result.data);
     res.status(201).json(member);
+  });
+
+  // Start a paid signup — returns a Stripe Checkout URL to redirect to.
+  app.post("/api/checkout", async (req, res) => {
+    const result = joinMemberSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid signup", errors: result.error.flatten() });
+    if (!paymentsConfigured()) return res.status(503).json({ message: "Payments not configured", configured: false });
+    try {
+      const draft = result.data as CheckoutDraft;
+      const { url } = await createCheckoutSession(draft, baseUrlFrom(req));
+      res.json({ url });
+    } catch (e: any) {
+      res.status(502).json({ message: e?.message || "Could not start checkout" });
+    }
+  });
+
+  // Confirm a returned checkout session → create the member once paid.
+  app.post("/api/checkout/confirm", async (req, res) => {
+    const sessionId = String(req.body?.sessionId || "");
+    if (!sessionId) return res.status(400).json({ message: "Missing sessionId" });
+    if (!paymentsConfigured()) return res.status(503).json({ message: "Payments not configured" });
+    try {
+      const session = await retrieveSession(sessionId);
+      if (session.payment_status !== "paid" && session.status !== "complete") {
+        return res.status(402).json({ message: "Payment not completed" });
+      }
+      if (isProcessed(sessionId)) {
+        // Already created — return the existing member by email.
+        const existing = storage.getMembers().find((m) => m.email === session.metadata?.email);
+        if (existing) return res.json(existing);
+      }
+      markProcessed(sessionId);
+      const m = session.metadata || {};
+      const member = createMemberFromDraft({ name: m.name, email: m.email, city: m.city, plan: m.plan, referredBy: m.referredBy });
+      res.status(201).json(member);
+    } catch (e: any) {
+      res.status(502).json({ message: e?.message || "Could not confirm payment" });
+    }
+  });
+
+  // Stripe webhook (optional, for robustness) — activates on async events.
+  app.post("/api/webhooks/stripe", (req, res) => {
+    if (!verifyWebhook((req.rawBody as Buffer) ?? Buffer.from(""), req.headers["stripe-signature"] as string)) {
+      return res.status(400).json({ message: "Invalid signature" });
+    }
+    const event = req.body;
+    if (event?.type === "checkout.session.completed") {
+      const session = event.data?.object;
+      if (session?.id && !isProcessed(session.id)) {
+        markProcessed(session.id);
+        const m = session.metadata || {};
+        if (m.name && m.email) createMemberFromDraft({ name: m.name, email: m.email, city: m.city || "London", plan: m.plan || "annual", referredBy: m.referredBy });
+      }
+    }
+    res.json({ received: true });
   });
 
   // Member's redemption history

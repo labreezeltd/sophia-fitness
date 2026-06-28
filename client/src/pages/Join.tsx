@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
-import { Check, Loader2, ShieldCheck } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Check, Loader2, ShieldCheck, CreditCard } from "lucide-react";
 import type { Member } from "@shared/schema";
+import type { Integrations } from "@/lib/types";
 import { Footer } from "@/components/Footer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { setMemberId, gbp } from "@/lib/savora";
@@ -19,17 +20,24 @@ export default function Join() {
   const { toast } = useToast();
   const [plan, setPlan] = useState<"annual" | "monthly">("annual");
   const [form, setForm] = useState({ name: "", email: "", city: "London", referredBy: "" });
+  const { data: integrations } = useQuery<Integrations>({ queryKey: ["/api/integrations"] });
+  const paid = integrations?.stripe.configured;
 
   const join = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/members/join", {
-        ...form,
-        referredBy: form.referredBy.trim() || undefined,
-        plan,
-      });
+      const payload = { ...form, referredBy: form.referredBy.trim() || undefined, plan };
+      // If Stripe is connected, send the member to secure checkout.
+      if (paid) {
+        const res = await apiRequest("POST", "/api/checkout", payload);
+        const data = (await res.json()) as { url: string };
+        window.location.href = data.url;
+        return null;
+      }
+      const res = await apiRequest("POST", "/api/members/join", payload);
       return (await res.json()) as Member;
     },
     onSuccess: (m) => {
+      if (!m) return; // redirected to Stripe
       setMemberId(m.id);
       queryClient.invalidateQueries({ queryKey: ["/api/overview"] });
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });
@@ -113,10 +121,13 @@ export default function Join() {
             disabled={!valid || join.isPending}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
-            {join.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Setting up…</> : "Start saving"}
+            {join.isPending
+              ? <><Loader2 className="h-4 w-4 animate-spin" /> {paid ? "Redirecting to payment…" : "Setting up…"}</>
+              : paid ? <><CreditCard className="h-4 w-4" /> Continue to secure payment</> : "Start saving"}
           </button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-            <ShieldCheck className="h-3.5 w-3.5" /> No card charged in this demo. Cancel anytime.
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {paid ? "Secure payment by Stripe. Cancel anytime." : "No card charged in this demo. Cancel anytime."}
           </p>
         </div>
       </div>

@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import Discover from "@/pages/Discover";
 import PartnerDetail from "@/pages/PartnerDetail";
 import Join from "@/pages/Join";
+import Welcome from "@/pages/Welcome";
 import MemberCard from "@/pages/MemberCard";
 import ForPartners from "@/pages/ForPartners";
 import Console from "@/pages/Console";
@@ -26,6 +27,7 @@ function AppLayout() {
             <Route path="/discover" component={Discover} />
             <Route path="/partner/:id" component={PartnerDetail} />
             <Route path="/join" component={Join} />
+            <Route path="/welcome" component={Welcome} />
             <Route path="/card" component={MemberCard} />
             <Route path="/partners" component={ForPartners} />
             <Route path="/console" component={Console} />
