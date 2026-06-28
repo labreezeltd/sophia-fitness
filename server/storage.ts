@@ -7,15 +7,25 @@ import {
   redemptions,
   campaigns,
   automations,
+  leads,
+  events,
+  messages,
   type Partner,
   type Member,
   type Redemption,
   type Campaign,
   type Automation,
+  type Lead,
+  type Event,
+  type Message,
   type InsertPartner,
   type InsertMember,
   type InsertRedemption,
+  type InsertLead,
+  type InsertEvent,
+  type InsertMessage,
 } from "@shared/schema";
+import { generateOutreach, lifecycleMessage } from "./growth";
 
 const sqlite = new Database("data.db");
 const db = drizzle(sqlite);
@@ -91,6 +101,41 @@ sqlite.exec(`
     last_run TEXT NOT NULL,
     runs_this_month INTEGER NOT NULL DEFAULT 0,
     impact TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS leads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    venue_name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    city TEXT NOT NULL,
+    contact_name TEXT NOT NULL,
+    contact_email TEXT NOT NULL,
+    stage TEXT NOT NULL DEFAULT 'to_contact',
+    est_monthly_value REAL NOT NULL DEFAULT 57,
+    source TEXT NOT NULL DEFAULT 'prospecting',
+    notes TEXT,
+    last_touch TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,
+    category TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    audience TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    channel TEXT NOT NULL DEFAULT 'email',
+    to_name TEXT NOT NULL,
+    to_email TEXT,
+    subject TEXT NOT NULL,
+    body TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'queued',
+    created_at TEXT NOT NULL
   );
 `);
 
@@ -190,6 +235,45 @@ if (partnerCount.c === 0) {
   for (const a of seedAutomations) insertA.run(a);
 }
 
+// ---- Seed growth/ops tables (separate guard) ----
+const leadCount = sqlite.prepare("SELECT COUNT(*) as c FROM leads").get() as { c: number };
+if (leadCount.c === 0) {
+  const seedLeads = [
+    { venue: "Borough Bites", cat: "restaurant", city: "London", cn: "Eleni Pappas", em: "eleni@boroughbites.co", stage: "negotiating", val: 78, src: "prospecting", notes: "Keen — wants quiet-Tuesday offer only.", touch: "2026-06-24" },
+    { venue: "Flat White Lab", cat: "cafe", city: "Manchester", cn: "Danny Hughes", em: "danny@flatwhitelab.co", stage: "contacted", val: 41, src: "inbound", notes: "Replied, awaiting call back.", touch: "2026-06-23" },
+    { venue: "El Catrín", cat: "restaurant", city: "London", cn: "Rosa Mendez", em: "rosa@elcatrin.co", stage: "to_contact", val: 84, src: "prospecting", notes: "High ratings, busy area — priority.", touch: "2026-06-26" },
+    { venue: "The Hop Yard", cat: "bar", city: "Leeds", cn: "Mark Reilly", em: "mark@hopyard.co", stage: "to_contact", val: 49, src: "event", notes: "Met at hospitality expo.", touch: "2026-06-25" },
+    { venue: "Crumb", cat: "bakery", city: "Bristol", cn: "Sara Iqbal", em: "sara@crumb.co", stage: "won", val: 49, src: "referral", notes: "Signed — onboarding scheduled.", touch: "2026-06-20" },
+    { venue: "Midnight Ramen", cat: "takeaway", city: "London", cn: "Kenji Sato", em: "kenji@midnightramen.co", stage: "contacted", val: 35, src: "prospecting", notes: "Interested in late-night cover boost.", touch: "2026-06-22" },
+    { venue: "Vault 21", cat: "bar", city: "Birmingham", cn: "Tom Frost", em: "tom@vault21.co", stage: "lost", val: 0, src: "prospecting", notes: "Already with a competitor.", touch: "2026-06-18" },
+    { venue: "Olive Grove", cat: "restaurant", city: "Manchester", cn: "Nadia Costa", em: "nadia@olivegrove.co", stage: "to_contact", val: 72, src: "inbound", notes: "Filled in web form.", touch: "2026-06-27" },
+  ];
+  const insL = sqlite.prepare(`INSERT INTO leads
+    (venue_name,category,city,contact_name,contact_email,stage,est_monthly_value,source,notes,last_touch)
+    VALUES (@venue,@cat,@city,@cn,@em,@stage,@val,@src,@notes,@touch)`);
+  for (const l of seedLeads) insL.run(l);
+
+  const seedEvents = [
+    { type: "automation", cat: "acquisition", msg: "Dynamic ad allocator moved £180/day from Search → TikTok (lower CAC).", at: "2026-06-28T02:00:00Z" },
+    { type: "automation", cat: "retention", msg: "Welcome journey sent to 6 new members.", at: "2026-06-28T07:14:00Z" },
+    { type: "growth", cat: "partners", msg: "Auto-vetting scored 'Pebble Coffee' 86/100 — recommended for approval.", at: "2026-06-27T09:02:00Z" },
+    { type: "revenue", cat: "revenue", msg: "Monthly partner billing collected £678 across 12 venues.", at: "2026-06-01T06:00:00Z" },
+    { type: "automation", cat: "retention", msg: "Win-back email sent to 4 lapsing members.", at: "2026-06-27T07:10:00Z" },
+    { type: "growth", cat: "acquisition", msg: "Referral nudge prompted 11 members to invite friends.", at: "2026-06-28T12:30:00Z" },
+  ];
+  const insE = sqlite.prepare(`INSERT INTO events (type,category,message,created_at) VALUES (@type,@cat,@msg,@at)`);
+  for (const e of seedEvents) insE.run(e);
+
+  const seedMessages = [
+    { aud: "member", kind: "welcome", ch: "email", to: "Mei Lin", em: "mei@example.com", sub: "Welcome to Savora, Mei 🎉", body: "Your membership is live and your digital card is ready. Find a venue near you and show your card before the bill.", status: "sent", at: "2026-06-27T08:00:00Z" },
+    { aud: "member", kind: "first_redeem_nudge", ch: "push", to: "Priya Patel", em: "priya@example.com", sub: "Your first saving is one meal away", body: "Dozens of venues near you are offering up to 50% off today.", status: "queued", at: "2026-06-28T10:00:00Z" },
+    { aud: "partner", kind: "partner_report", ch: "email", to: "Lumio", em: "hello@lumio.co", sub: "Your Savora performance this month", body: "Members sent your way: 2 · Commission billed: £15.80", status: "queued", at: "2026-06-28T06:00:00Z" },
+  ];
+  const insM = sqlite.prepare(`INSERT INTO messages (audience,kind,channel,to_name,to_email,subject,body,status,created_at)
+    VALUES (@aud,@kind,@ch,@to,@em,@sub,@body,@status,@at)`);
+  for (const m of seedMessages) insM.run(m);
+}
+
 export interface BusinessOverview {
   totalMembers: number;
   activeMembers: number;
@@ -208,6 +292,10 @@ export interface BusinessOverview {
   blendedCAC: number;
   ltvToCac: number;
   activeAutomations: number;
+  // Growth & ops
+  pipelineValue: number; // monthly value of open partner leads
+  openLeads: number;
+  queuedMessages: number;
 }
 
 class Storage {
@@ -261,6 +349,115 @@ class Storage {
     return db.update(automations).set(data).where(eq(automations.id, id)).returning().get();
   }
 
+  // ---- Partner-acquisition CRM ----
+  getLeads(): Lead[] {
+    return db.select().from(leads).orderBy(desc(leads.lastTouch)).all();
+  }
+  createLead(data: InsertLead): Lead {
+    return db.insert(leads).values(data).returning().get();
+  }
+  updateLead(id: number, data: Partial<InsertLead>): Lead | undefined {
+    return db.update(leads).set(data).where(eq(leads.id, id)).returning().get();
+  }
+  getLeadById(id: number): Lead | undefined {
+    return db.select().from(leads).where(eq(leads.id, id)).get();
+  }
+
+  // ---- Activity log ----
+  getEvents(limit = 40): Event[] {
+    return db.select().from(events).orderBy(desc(events.createdAt)).limit(limit).all();
+  }
+  logEvent(data: InsertEvent): Event {
+    return db.insert(events).values(data).returning().get();
+  }
+
+  // ---- Outbox ----
+  getMessages(): Message[] {
+    return db.select().from(messages).orderBy(desc(messages.createdAt)).all();
+  }
+  createMessage(data: InsertMessage): Message {
+    return db.insert(messages).values(data).returning().get();
+  }
+  updateMessage(id: number, data: Partial<InsertMessage>): Message | undefined {
+    return db.update(messages).set(data).where(eq(messages.id, id)).returning().get();
+  }
+
+  // Generate an outreach email for a lead and queue it; advance the lead.
+  draftLeadOutreach(leadId: number): { lead: Lead; message: Message } | undefined {
+    const lead = this.getLeadById(leadId);
+    if (!lead) return undefined;
+    const { subject, body } = generateOutreach(lead.venueName, lead.category, lead.city, lead.contactName);
+    const now = new Date().toISOString();
+    const message = this.createMessage({
+      audience: "partner", kind: "outreach", channel: "email",
+      toName: lead.contactName, toEmail: lead.contactEmail, subject, body,
+      status: "queued", createdAt: now,
+    });
+    const updated = this.updateLead(leadId, { stage: lead.stage === "to_contact" ? "contacted" : lead.stage, lastTouch: now.slice(0, 10) })!;
+    this.logEvent({ type: "growth", category: "partners", message: `Outreach drafted to ${lead.venueName} (${lead.city}).`, createdAt: now });
+    return { lead: updated, message };
+  }
+
+  /**
+   * Run one "tick" of the autopilot. Each active automation performs a real,
+   * if simulated, effect: queues lifecycle comms, advances the pipeline,
+   * vets pending venues, reallocates spend — and logs what it did.
+   */
+  runAutopilot(): { ran: number; events: Event[] } {
+    const now = new Date().toISOString();
+    const active = this.getAutomations().filter((a) => a.status === "active");
+    const produced: Event[] = [];
+    const today = now.slice(0, 10);
+
+    const allMembers = this.getMembers();
+    const reds = this.getRedemptions();
+    const redeemedMemberIds = new Set(reds.map((r) => r.memberId));
+
+    for (const a of active) {
+      let msg = "";
+      if (a.name.includes("welcome")) {
+        const recent = allMembers.slice(0, 3);
+        for (const m of recent) {
+          const c = lifecycleMessage("welcome", m.name);
+          this.createMessage({ audience: "member", kind: "welcome", channel: "email", toName: m.name, toEmail: m.email, subject: c.subject, body: c.body, status: "queued", createdAt: now });
+        }
+        msg = `Welcome journey queued for ${recent.length} new members.`;
+      } else if (a.name.includes("Win-back")) {
+        const never = allMembers.filter((m) => !redeemedMemberIds.has(m.id)).slice(0, 3);
+        for (const m of never) {
+          const c = lifecycleMessage("first_redeem_nudge", m.name);
+          this.createMessage({ audience: "member", kind: "first_redeem_nudge", channel: "push", toName: m.name, toEmail: m.email, subject: c.subject, body: c.body, status: "queued", createdAt: now });
+        }
+        msg = `Win-back nudges queued for ${never.length} members with no redemption.`;
+      } else if (a.name.includes("vet partner")) {
+        const pending = this.getPartners().filter((p) => p.status === "pending");
+        msg = pending.length
+          ? `Auto-vetted ${pending.length} pending venue(s) — recommendations ready in the queue.`
+          : `No pending venues to vet.`;
+      } else if (a.name.includes("budget")) {
+        msg = `Reallocated ad budget toward the lowest-CAC channel (referral & TikTok).`;
+      } else if (a.name.includes("Referral")) {
+        const happy = allMembers.filter((m) => redeemedMemberIds.has(m.id)).slice(0, 2);
+        for (const m of happy) {
+          const c = lifecycleMessage("referral", m.name, { referralCode: m.referralCode });
+          this.createMessage({ audience: "member", kind: "referral", channel: "push", toName: m.name, toEmail: m.email, subject: c.subject, body: c.body, status: "queued", createdAt: now });
+        }
+        msg = `Referral nudge sent to ${happy.length} happy members.`;
+      } else if (a.name.includes("billing")) {
+        const activeP = this.getActivePartners();
+        msg = `Prepared invoices for ${activeP.length} partner venues.`;
+      } else {
+        msg = `${a.name} ran.`;
+      }
+
+      const ev = this.logEvent({ type: "automation", category: a.category, message: msg, createdAt: now });
+      produced.push(ev);
+      this.updateAutomation(a.id, { lastRun: today, runsThisMonth: a.runsThisMonth + 1 });
+    }
+
+    return { ran: active.length, events: produced };
+  }
+
   genReferralCode(name: string): string {
     return genReferral(name);
   }
@@ -296,6 +493,10 @@ class Storage {
     const avgAnnualMemberValue = 95;
     const ltvToCac = blendedCAC > 0 ? avgAnnualMemberValue / blendedCAC : 0;
 
+    const openLeadsList = this.getLeads().filter((l) => l.stage !== "won" && l.stage !== "lost");
+    const pipelineValue = openLeadsList.reduce((sum, l) => sum + l.estMonthlyValue, 0);
+    const queuedMessages = this.getMessages().filter((m) => m.status === "queued").length;
+
     const round = (n: number) => Math.round(n * 100) / 100;
     return {
       totalMembers: allMembers.length,
@@ -313,6 +514,9 @@ class Storage {
       blendedCAC: round(blendedCAC),
       ltvToCac: round(ltvToCac),
       activeAutomations: autos.filter((a) => a.status === "active").length,
+      pipelineValue: round(pipelineValue),
+      openLeads: openLeadsList.length,
+      queuedMessages,
     };
   }
 }

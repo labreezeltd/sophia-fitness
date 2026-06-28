@@ -138,3 +138,78 @@ export type InsertAutomation = z.infer<typeof insertAutomationSchema>;
 export type PartnerApplication = z.infer<typeof partnerApplicationSchema>;
 export type JoinMember = z.infer<typeof joinMemberSchema>;
 export type Redeem = z.infer<typeof redeemSchema>;
+
+/* ============================================================
+   GROWTH & OPERATIONS ENGINE
+   The machinery that brings customers + venues and runs ops.
+   ============================================================ */
+
+// Partner-acquisition CRM — the pipeline of venues we're trying to sign.
+export const leads = sqliteTable("leads", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  venueName: text("venue_name").notNull(),
+  category: text("category").notNull(),
+  city: text("city").notNull(),
+  contactName: text("contact_name").notNull(),
+  contactEmail: text("contact_email").notNull(),
+  stage: text("stage").notNull().default("to_contact"), // to_contact | contacted | negotiating | won | lost
+  estMonthlyValue: real("est_monthly_value").notNull().default(57), // fee + expected commission
+  source: text("source").notNull().default("prospecting"), // prospecting | inbound | referral | event
+  notes: text("notes"),
+  lastTouch: text("last_touch").notNull(),
+});
+
+// Autopilot activity log — every automation/run writes a line here.
+export const events = sqliteTable("events", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  type: text("type").notNull(), // 'automation' | 'system' | 'growth' | 'revenue'
+  category: text("category").notNull(), // acquisition | retention | partners | revenue | ops
+  message: text("message").notNull(),
+  createdAt: text("created_at").notNull(), // ISO timestamp
+});
+
+// Lifecycle outbox — generated member/partner comms, ready to send.
+export const messages = sqliteTable("messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  audience: text("audience").notNull(), // 'member' | 'partner'
+  kind: text("kind").notNull(), // welcome | first_redeem_nudge | winback | referral | partner_report | outreach
+  channel: text("channel").notNull().default("email"), // email | push
+  toName: text("to_name").notNull(),
+  toEmail: text("to_email"),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  status: text("status").notNull().default("queued"), // queued | sent
+  createdAt: text("created_at").notNull(),
+});
+
+export const insertLeadSchema = createInsertSchema(leads).omit({ id: true });
+export const insertEventSchema = createInsertSchema(events).omit({ id: true });
+export const insertMessageSchema = createInsertSchema(messages).omit({ id: true });
+
+export const newLeadSchema = z.object({
+  venueName: z.string().min(2),
+  category: z.string().min(2),
+  city: z.string().min(2),
+  contactName: z.string().min(2),
+  contactEmail: z.string().email(),
+  source: z.enum(["prospecting", "inbound", "referral", "event"]).default("prospecting"),
+  notes: z.string().optional(),
+});
+
+export const generateContentSchema = z.object({
+  partnerId: z.coerce.number().int().optional(),
+  goal: z.enum(["awareness", "signups", "winback", "referral"]).default("signups"),
+  channel: z.enum(["instagram", "facebook_ad", "google_ad", "email", "tiktok"]).default("instagram"),
+  city: z.string().optional(),
+});
+
+export type Lead = typeof leads.$inferSelect;
+export type Event = typeof events.$inferSelect;
+export type Message = typeof messages.$inferSelect;
+export type InsertLead = z.infer<typeof insertLeadSchema>;
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type NewLead = z.infer<typeof newLeadSchema>;
+export type GenerateContent = z.infer<typeof generateContentSchema>;
+
+export const LEAD_STAGES = ["to_contact", "contacted", "negotiating", "won", "lost"] as const;

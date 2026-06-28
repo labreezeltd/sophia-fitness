@@ -12,6 +12,7 @@ import Join from "@/pages/Join";
 import MemberCard from "@/pages/MemberCard";
 import ForPartners from "@/pages/ForPartners";
 import Console from "@/pages/Console";
+import Growth from "@/pages/Growth";
 import NotFound from "@/pages/not-found";
 
 function AppLayout() {
@@ -28,6 +29,7 @@ function AppLayout() {
             <Route path="/card" component={MemberCard} />
             <Route path="/partners" component={ForPartners} />
             <Route path="/console" component={Console} />
+            <Route path="/growth" component={Growth} />
             <Route component={NotFound} />
           </Switch>
         </main>

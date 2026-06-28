@@ -1,4 +1,6 @@
 import { Link } from "wouter";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { COMPANY, COMPANY_ADDRESS_ONE_LINE } from "@shared/company";
 
 export function Footer() {
   return (
@@ -34,11 +36,26 @@ export function Footer() {
             <div className="space-y-2">
               <p className="font-semibold">Operator</p>
               <Link href="/console" className="block text-muted-foreground hover:text-foreground">Owner console</Link>
+              <Link href="/growth" className="block text-muted-foreground hover:text-foreground">Growth engine</Link>
             </div>
           </div>
         </div>
-        <p className="mt-10 text-xs text-muted-foreground">
-          © 2026 Savora — a concept membership marketplace. Prototype for demonstration.
+
+        <div className="mt-10 grid gap-3 border-t border-border pt-6 text-sm text-muted-foreground sm:grid-cols-3">
+          <div className="flex items-start gap-2">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{COMPANY_ADDRESS_ONE_LINE}</span>
+          </div>
+          <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-2 hover:text-foreground">
+            <Mail className="h-4 w-4 shrink-0" /> {COMPANY.email}
+          </a>
+          <a href={`tel:${COMPANY.phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-foreground">
+            <Phone className="h-4 w-4 shrink-0" /> {COMPANY.phone}
+          </a>
+        </div>
+
+        <p className="mt-6 text-xs text-muted-foreground">
+          © 2026 {COMPANY.product}. Operated by {COMPANY.legalName}. All rights reserved.
         </p>
       </div>
     </footer>

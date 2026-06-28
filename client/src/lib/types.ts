@@ -15,4 +15,16 @@ export interface BusinessOverview {
   blendedCAC: number;
   ltvToCac: number;
   activeAutomations: number;
+  pipelineValue: number;
+  openLeads: number;
+  queuedMessages: number;
+}
+
+export interface ContentAsset {
+  channel: string;
+  label: string;
+  title: string;
+  body: string;
+  hashtags?: string[];
+  cta: string;
 }

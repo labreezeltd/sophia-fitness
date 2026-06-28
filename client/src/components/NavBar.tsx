@@ -9,7 +9,8 @@ const LINKS = [
   { href: "/", label: "Home" },
   { href: "/discover", label: "Discover" },
   { href: "/partners", label: "For Partners" },
-  { href: "/console", label: "Owner Console" },
+  { href: "/console", label: "Console" },
+  { href: "/growth", label: "Growth" },
 ];
 
 function useMemberId() {

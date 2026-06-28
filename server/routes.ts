@@ -5,7 +5,10 @@ import {
   partnerApplicationSchema,
   joinMemberSchema,
   redeemSchema,
+  newLeadSchema,
+  generateContentSchema,
 } from "@shared/schema";
+import { generateMarketingContent, lifecycleMessage } from "./growth";
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   // ---- Partners / venues ----
@@ -49,6 +52,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       contactEmail: a.contactEmail,
       joinedDate: new Date().toISOString().slice(0, 10),
     });
+    storage.logEvent({ type: "growth", category: "partners", message: `New venue applied: ${partner.name} (${partner.city}) — queued for auto-vetting.`, createdAt: new Date().toISOString() });
     res.status(201).json(partner);
   });
 
@@ -87,6 +91,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       acquisitionChannel: d.referredBy ? "referral" : "organic",
       joinedDate: new Date().toISOString().slice(0, 10),
     });
+    // Autopilot: greet the new member + log the acquisition.
+    const welcome = lifecycleMessage("welcome", member.name);
+    storage.createMessage({ audience: "member", kind: "welcome", channel: "email", toName: member.name, toEmail: member.email, subject: welcome.subject, body: welcome.body, status: "queued", createdAt: new Date().toISOString() });
+    storage.logEvent({ type: "growth", category: "acquisition", message: `New member joined: ${member.name} (${member.acquisitionChannel}). Welcome email queued.`, createdAt: new Date().toISOString() });
     res.status(201).json(member);
   });
 
@@ -129,6 +137,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       commissionAmount,
       date: new Date().toISOString().slice(0, 10),
     });
+    storage.logEvent({ type: "revenue", category: "revenue", message: `${member.name} redeemed at ${partner.name}: saved ${savedAmount.toFixed(2)}, earned ${commissionAmount.toFixed(2)} commission.`, createdAt: new Date().toISOString() });
     res.status(201).json(redemption);
   });
 
@@ -150,6 +159,86 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // ---- Business overview (owner console) ----
   app.get("/api/overview", (_req, res) => {
     res.json(storage.getBusinessOverview());
+  });
+
+  // ================= GROWTH & OPERATIONS =================
+
+  // Partner-acquisition CRM
+  app.get("/api/leads", (_req, res) => {
+    res.json(storage.getLeads());
+  });
+
+  app.post("/api/leads", (req, res) => {
+    const result = newLeadSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid lead", errors: result.error.flatten() });
+    const d = result.data;
+    const lead = storage.createLead({
+      venueName: d.venueName, category: d.category, city: d.city,
+      contactName: d.contactName, contactEmail: d.contactEmail,
+      stage: "to_contact", estMonthlyValue: 57, source: d.source,
+      notes: d.notes ?? null, lastTouch: new Date().toISOString().slice(0, 10),
+    });
+    storage.logEvent({ type: "growth", category: "partners", message: `New lead added to pipeline: ${lead.venueName} (${lead.city}).`, createdAt: new Date().toISOString() });
+    res.status(201).json(lead);
+  });
+
+  app.patch("/api/leads/:id", (req, res) => {
+    const body = { ...req.body, lastTouch: new Date().toISOString().slice(0, 10) };
+    const updated = storage.updateLead(parseInt(req.params.id), body);
+    if (!updated) return res.status(404).json({ message: "Lead not found" });
+    if (req.body.stage) {
+      storage.logEvent({ type: "growth", category: "partners", message: `${updated.venueName} moved to '${req.body.stage}'.`, createdAt: new Date().toISOString() });
+    }
+    res.json(updated);
+  });
+
+  // Draft & queue an outreach email for a lead
+  app.post("/api/leads/:id/outreach", (req, res) => {
+    const result = storage.draftLeadOutreach(parseInt(req.params.id));
+    if (!result) return res.status(404).json({ message: "Lead not found" });
+    res.status(201).json(result);
+  });
+
+  // Marketing content generator
+  app.post("/api/marketing/generate", (req, res) => {
+    const result = generateContentSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid request", errors: result.error.flatten() });
+    const { partnerId, goal, channel, city } = result.data;
+    const partner = partnerId ? storage.getPartnerById(partnerId) : undefined;
+    const assets = generateMarketingContent(goal, channel, partner, city);
+    res.json({ assets });
+  });
+
+  // Activity feed
+  app.get("/api/events", (_req, res) => {
+    res.json(storage.getEvents());
+  });
+
+  // Lifecycle outbox
+  app.get("/api/messages", (_req, res) => {
+    res.json(storage.getMessages());
+  });
+
+  app.patch("/api/messages/:id", (req, res) => {
+    const updated = storage.updateMessage(parseInt(req.params.id), req.body);
+    if (!updated) return res.status(404).json({ message: "Message not found" });
+    res.json(updated);
+  });
+
+  // Mark all queued messages as sent (simulates a real send via email provider)
+  app.post("/api/messages/send-all", (_req, res) => {
+    const queued = storage.getMessages().filter((m) => m.status === "queued");
+    for (const m of queued) storage.updateMessage(m.id, { status: "sent" });
+    if (queued.length) {
+      storage.logEvent({ type: "automation", category: "ops", message: `Outbox flushed: ${queued.length} message(s) sent.`, createdAt: new Date().toISOString() });
+    }
+    res.json({ sent: queued.length });
+  });
+
+  // Run one tick of the autopilot
+  app.post("/api/autopilot/run", (_req, res) => {
+    const result = storage.runAutopilot();
+    res.json(result);
   });
 
   return httpServer;
