@@ -1,109 +1,344 @@
 import type { Express } from "express";
 import { type Server } from "http";
 import { storage } from "./storage";
-import { insertWorkoutSessionSchema, insertExerciseSetSchema, insertPersonalRecordSchema, insertCardioSessionSchema } from "@shared/schema";
+import {
+  partnerApplicationSchema,
+  joinMemberSchema,
+  redeemSchema,
+  newLeadSchema,
+  generateContentSchema,
+} from "@shared/schema";
+import { generateMarketingContent, lifecycleMessage } from "./growth";
+import { sendEmail, emailConfigured, emailProvider } from "./email";
+import {
+  paymentsConfigured, createCheckoutSession, retrieveSession,
+  verifyWebhook, isProcessed, markProcessed, type CheckoutDraft,
+} from "./payments";
+import { COMPANY } from "@shared/company";
+import type { Member } from "@shared/schema";
+
+// Derive the public base URL of this request (honours APP_URL if set).
+function baseUrlFrom(req: any): string {
+  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
+  const proto = (req.headers["x-forwarded-proto"] as string)?.split(",")[0] || req.protocol || "http";
+  return `${proto}://${req.headers.host}`;
+}
+
+// Create a member from a signup draft + fire the welcome automation.
+function createMemberFromDraft(d: { name: string; email: string; city: string; plan: "monthly" | "annual"; referredBy?: string | null }): Member {
+  const member = storage.createMember({
+    name: d.name,
+    email: d.email,
+    city: d.city,
+    plan: d.plan,
+    membershipFee: d.plan === "annual" ? 79 : 8.99,
+    status: "active",
+    referralCode: storage.genReferralCode(d.name),
+    referredBy: d.referredBy ?? null,
+    acquisitionChannel: d.referredBy ? "referral" : "organic",
+    joinedDate: new Date().toISOString().slice(0, 10),
+  });
+  const welcome = lifecycleMessage("welcome", member.name);
+  storage.createMessage({ audience: "member", kind: "welcome", channel: "email", toName: member.name, toEmail: member.email, subject: welcome.subject, body: welcome.body, status: "queued", createdAt: new Date().toISOString() });
+  storage.logEvent({ type: "growth", category: "acquisition", message: `New member joined: ${member.name} (${member.acquisitionChannel}). Welcome email queued.`, createdAt: new Date().toISOString() });
+  return member;
+}
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  // Workout Days (templates)
-  app.get("/api/workout-days", (_req, res) => {
-    const days = storage.getWorkoutDays();
-    res.json(days);
+  // ---- Partners / venues ----
+  app.get("/api/partners", (req, res) => {
+    // Public discovery only shows active venues; ?all=1 returns everything (console).
+    const partners = req.query.all === "1" ? storage.getPartners() : storage.getActivePartners();
+    res.json(partners);
   });
 
-  // Sessions
-  app.get("/api/sessions", (_req, res) => {
-    const sessions = storage.getSessions();
-    res.json(sessions);
+  app.get("/api/partners/:id", (req, res) => {
+    const partner = storage.getPartnerById(parseInt(req.params.id));
+    if (!partner) return res.status(404).json({ message: "Partner not found" });
+    res.json(partner);
   });
 
-  app.get("/api/sessions/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const session = storage.getSessionById(id);
-    if (!session) return res.status(404).json({ error: "Session not found" });
-    res.json(session);
+  // A venue applies to join (public). Lands as 'pending' for the autopilot to vet.
+  app.post("/api/partners/apply", (req, res) => {
+    const result = partnerApplicationSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid application", errors: result.error.flatten() });
+    const a = result.data;
+    const emojiByCategory: Record<string, string> = {
+      restaurant: "🍽️", cafe: "☕", bar: "🍸", bakery: "🥐", dessert: "🍰", takeaway: "🥡",
+    };
+    const partner = storage.createPartner({
+      name: a.name,
+      category: a.category,
+      cuisine: a.cuisine,
+      city: a.city,
+      neighborhood: a.neighborhood,
+      description: a.description,
+      emoji: emojiByCategory[a.category] ?? "🍴",
+      priceRange: "££",
+      rating: 4.5,
+      discountPercent: a.discountPercent,
+      offerText: `${a.discountPercent}% off for Savora members`,
+      plan: "growth",
+      monthlyFee: 49,
+      commissionPercent: 8,
+      status: "pending",
+      featured: false,
+      contactEmail: a.contactEmail,
+      joinedDate: new Date().toISOString().slice(0, 10),
+    });
+    storage.logEvent({ type: "growth", category: "partners", message: `New venue applied: ${partner.name} (${partner.city}) — queued for auto-vetting.`, createdAt: new Date().toISOString() });
+    res.status(201).json(partner);
   });
 
-  app.post("/api/sessions", (req, res) => {
-    const result = insertWorkoutSessionSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const session = storage.createSession(result.data);
-    res.status(201).json(session);
-  });
-
-  app.patch("/api/sessions/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const updated = storage.updateSession(id, req.body);
-    if (!updated) return res.status(404).json({ error: "Session not found" });
+  // Console: approve / pause / activate a venue
+  app.patch("/api/partners/:id", (req, res) => {
+    const updated = storage.updatePartner(parseInt(req.params.id), req.body);
+    if (!updated) return res.status(404).json({ message: "Partner not found" });
     res.json(updated);
   });
 
-  app.delete("/api/sessions/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    storage.deleteSetsBySession(id);
-    storage.deleteSession(id);
-    res.json({ success: true });
+  // ---- Members ----
+  app.get("/api/members", (_req, res) => {
+    res.json(storage.getMembers());
   });
 
-  // Exercise Sets
-  app.get("/api/sessions/:id/sets", (req, res) => {
-    const sessionId = parseInt(req.params.id);
-    const sets = storage.getSetsBySession(sessionId);
-    res.json(sets);
+  app.get("/api/members/:id", (req, res) => {
+    const member = storage.getMemberById(parseInt(req.params.id));
+    if (!member) return res.status(404).json({ message: "Member not found" });
+    res.json(member);
   });
 
-  app.post("/api/sets", (req, res) => {
-    const result = insertExerciseSetSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const set = storage.createSet(result.data);
-    res.status(201).json(set);
+  // A customer joins the club (public). Free path — used when Stripe
+  // isn't configured, or as the fallback after a simulated checkout.
+  app.post("/api/members/join", (req, res) => {
+    const result = joinMemberSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid signup", errors: result.error.flatten() });
+    const member = createMemberFromDraft(result.data);
+    res.status(201).json(member);
   });
 
-  app.patch("/api/sets/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const updated = storage.updateSet(id, req.body);
-    if (!updated) return res.status(404).json({ error: "Set not found" });
+  // Start a paid signup — returns a Stripe Checkout URL to redirect to.
+  app.post("/api/checkout", async (req, res) => {
+    const result = joinMemberSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid signup", errors: result.error.flatten() });
+    if (!paymentsConfigured()) return res.status(503).json({ message: "Payments not configured", configured: false });
+    try {
+      const draft = result.data as CheckoutDraft;
+      const { url } = await createCheckoutSession(draft, baseUrlFrom(req));
+      res.json({ url });
+    } catch (e: any) {
+      res.status(502).json({ message: e?.message || "Could not start checkout" });
+    }
+  });
+
+  // Confirm a returned checkout session → create the member once paid.
+  app.post("/api/checkout/confirm", async (req, res) => {
+    const sessionId = String(req.body?.sessionId || "");
+    if (!sessionId) return res.status(400).json({ message: "Missing sessionId" });
+    if (!paymentsConfigured()) return res.status(503).json({ message: "Payments not configured" });
+    try {
+      const session = await retrieveSession(sessionId);
+      if (session.payment_status !== "paid" && session.status !== "complete") {
+        return res.status(402).json({ message: "Payment not completed" });
+      }
+      if (isProcessed(sessionId)) {
+        // Already created — return the existing member by email.
+        const existing = storage.getMembers().find((m) => m.email === session.metadata?.email);
+        if (existing) return res.json(existing);
+      }
+      markProcessed(sessionId);
+      const m = session.metadata || {};
+      const member = createMemberFromDraft({ name: m.name, email: m.email, city: m.city, plan: m.plan, referredBy: m.referredBy });
+      res.status(201).json(member);
+    } catch (e: any) {
+      res.status(502).json({ message: e?.message || "Could not confirm payment" });
+    }
+  });
+
+  // Stripe webhook (optional, for robustness) — activates on async events.
+  app.post("/api/webhooks/stripe", (req, res) => {
+    if (!verifyWebhook((req.rawBody as Buffer) ?? Buffer.from(""), req.headers["stripe-signature"] as string)) {
+      return res.status(400).json({ message: "Invalid signature" });
+    }
+    const event = req.body;
+    if (event?.type === "checkout.session.completed") {
+      const session = event.data?.object;
+      if (session?.id && !isProcessed(session.id)) {
+        markProcessed(session.id);
+        const m = session.metadata || {};
+        if (m.name && m.email) createMemberFromDraft({ name: m.name, email: m.email, city: m.city || "London", plan: m.plan || "annual", referredBy: m.referredBy });
+      }
+    }
+    res.json({ received: true });
+  });
+
+  // Member's redemption history
+  app.get("/api/members/:id/redemptions", (req, res) => {
+    res.json(storage.getRedemptionsByMember(parseInt(req.params.id)));
+  });
+
+  // ---- Redemptions ----
+  app.get("/api/redemptions", (_req, res) => {
+    res.json(storage.getRedemptions());
+  });
+
+  // A member redeems an offer at a venue → savings for them, commission for us.
+  app.post("/api/redemptions", (req, res) => {
+    const result = redeemSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid redemption", errors: result.error.flatten() });
+    const { memberId, partnerId, billAmount } = result.data;
+
+    const member = storage.getMemberById(memberId);
+    if (!member) return res.status(404).json({ message: "Member not found" });
+    const partner = storage.getPartnerById(partnerId);
+    if (!partner || partner.status !== "active") {
+      return res.status(404).json({ message: "Venue not available" });
+    }
+
+    const round = (n: number) => Math.round(n * 100) / 100;
+    const savedAmount = round(billAmount * (partner.discountPercent / 100));
+    const commissionAmount = round(billAmount * (partner.commissionPercent / 100));
+    const code = `SV-${partner.id}${memberId}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const redemption = storage.createRedemption({
+      memberId,
+      partnerId,
+      partnerName: partner.name,
+      code,
+      billAmount,
+      discountPercent: partner.discountPercent,
+      savedAmount,
+      commissionAmount,
+      date: new Date().toISOString().slice(0, 10),
+    });
+    storage.logEvent({ type: "revenue", category: "revenue", message: `${member.name} redeemed at ${partner.name}: saved ${savedAmount.toFixed(2)}, earned ${commissionAmount.toFixed(2)} commission.`, createdAt: new Date().toISOString() });
+    res.status(201).json(redemption);
+  });
+
+  // ---- Marketing & autopilot ----
+  app.get("/api/campaigns", (_req, res) => {
+    res.json(storage.getCampaigns());
+  });
+
+  app.get("/api/automations", (_req, res) => {
+    res.json(storage.getAutomations());
+  });
+
+  app.patch("/api/automations/:id", (req, res) => {
+    const updated = storage.updateAutomation(parseInt(req.params.id), req.body);
+    if (!updated) return res.status(404).json({ message: "Automation not found" });
     res.json(updated);
   });
 
-  app.delete("/api/sets/:id", (req, res) => {
+  // ---- Business overview (owner console) ----
+  app.get("/api/overview", (_req, res) => {
+    res.json(storage.getBusinessOverview());
+  });
+
+  // ================= GROWTH & OPERATIONS =================
+
+  // Partner-acquisition CRM
+  app.get("/api/leads", (_req, res) => {
+    res.json(storage.getLeads());
+  });
+
+  app.post("/api/leads", (req, res) => {
+    const result = newLeadSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid lead", errors: result.error.flatten() });
+    const d = result.data;
+    const lead = storage.createLead({
+      venueName: d.venueName, category: d.category, city: d.city,
+      contactName: d.contactName, contactEmail: d.contactEmail,
+      stage: "to_contact", estMonthlyValue: 57, source: d.source,
+      notes: d.notes ?? null, lastTouch: new Date().toISOString().slice(0, 10),
+    });
+    storage.logEvent({ type: "growth", category: "partners", message: `New lead added to pipeline: ${lead.venueName} (${lead.city}).`, createdAt: new Date().toISOString() });
+    res.status(201).json(lead);
+  });
+
+  app.patch("/api/leads/:id", (req, res) => {
+    const body = { ...req.body, lastTouch: new Date().toISOString().slice(0, 10) };
+    const updated = storage.updateLead(parseInt(req.params.id), body);
+    if (!updated) return res.status(404).json({ message: "Lead not found" });
+    if (req.body.stage) {
+      storage.logEvent({ type: "growth", category: "partners", message: `${updated.venueName} moved to '${req.body.stage}'.`, createdAt: new Date().toISOString() });
+    }
+    res.json(updated);
+  });
+
+  // Draft & queue an outreach email for a lead
+  app.post("/api/leads/:id/outreach", (req, res) => {
+    const result = storage.draftLeadOutreach(parseInt(req.params.id));
+    if (!result) return res.status(404).json({ message: "Lead not found" });
+    res.status(201).json(result);
+  });
+
+  // Marketing content generator
+  app.post("/api/marketing/generate", (req, res) => {
+    const result = generateContentSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid request", errors: result.error.flatten() });
+    const { partnerId, goal, channel, city } = result.data;
+    const partner = partnerId ? storage.getPartnerById(partnerId) : undefined;
+    const assets = generateMarketingContent(goal, channel, partner, city);
+    res.json({ assets });
+  });
+
+  // Activity feed
+  app.get("/api/events", (_req, res) => {
+    res.json(storage.getEvents());
+  });
+
+  // Lifecycle outbox
+  app.get("/api/messages", (_req, res) => {
+    res.json(storage.getMessages());
+  });
+
+  // Send a single message now (real email if configured, else simulated).
+  app.patch("/api/messages/:id", async (req, res) => {
     const id = parseInt(req.params.id);
-    storage.deleteSet(id);
-    res.json({ success: true });
+    if (req.body.status === "sent") {
+      const msg = storage.getMessages().find((m) => m.id === id);
+      if (!msg) return res.status(404).json({ message: "Message not found" });
+      const result = await sendEmail({ to: msg.toEmail, subject: msg.subject, body: msg.body });
+      if (!result.sent) return res.status(502).json({ message: `Send failed: ${result.error}` });
+      const updated = storage.updateMessage(id, { status: "sent" });
+      return res.json({ ...updated, simulated: result.simulated });
+    }
+    const updated = storage.updateMessage(id, req.body);
+    if (!updated) return res.status(404).json({ message: "Message not found" });
+    res.json(updated);
   });
 
-  // Personal Records
-  app.get("/api/prs", (_req, res) => {
-    const prs = storage.getPersonalRecords();
-    res.json(prs);
+  // Flush the outbox — sends every queued message (real or simulated).
+  app.post("/api/messages/send-all", async (_req, res) => {
+    const queued = storage.getMessages().filter((m) => m.status === "queued");
+    let sent = 0, failed = 0;
+    let simulated = false;
+    for (const m of queued) {
+      const r = await sendEmail({ to: m.toEmail, subject: m.subject, body: m.body });
+      if (r.sent) { storage.updateMessage(m.id, { status: "sent" }); sent++; simulated = simulated || r.simulated; }
+      else failed++;
+    }
+    if (sent) {
+      const how = simulated ? "simulated (no email provider connected)" : `sent live via ${emailProvider()}`;
+      storage.logEvent({ type: "automation", category: "ops", message: `Outbox flushed: ${sent} message(s) ${how}.`, createdAt: new Date().toISOString() });
+    }
+    res.json({ sent, failed, simulated });
   });
 
-  app.post("/api/prs", (req, res) => {
-    const result = insertPersonalRecordSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const pr = storage.createPersonalRecord(result.data);
-    res.status(201).json(pr);
+  // Integration status — lets the UI show what's connected.
+  app.get("/api/integrations", (_req, res) => {
+    res.json({
+      company: { name: COMPANY.legalName, email: COMPANY.email },
+      email: { provider: emailProvider(), configured: emailConfigured(), from: process.env.EMAIL_FROM || COMPANY.email },
+      stripe: { configured: Boolean(process.env.STRIPE_SECRET_KEY) },
+    });
   });
 
-  // Cardio Sessions
-  app.get("/api/cardio", (_req, res) => {
-    const sessions = storage.getCardioSessions();
-    res.json(sessions);
-  });
-
-  app.post("/api/cardio", (req, res) => {
-    const result = insertCardioSessionSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: result.error.flatten() });
-    const session = storage.createCardioSession(result.data);
-    res.status(201).json(session);
-  });
-
-  // Stats
-  app.get("/api/stats", (_req, res) => {
-    const weeklyCount = storage.getWeeklySessionCount();
-    const totalWorkouts = storage.getTotalWorkouts();
-    const prs = storage.getPersonalRecords();
-    const sessions = storage.getSessions().slice(0, 10);
-    res.json({ weeklyCount, totalWorkouts, prCount: prs.length, recentSessions: sessions });
+  // Run one tick of the autopilot
+  app.post("/api/autopilot/run", (_req, res) => {
+    const result = storage.runAutopilot();
+    res.json(result);
   });
 
   return httpServer;

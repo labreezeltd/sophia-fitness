@@ -1,0 +1,22 @@
+# Render blueprint — deploy Savora as a free web service.
+# 1. Push this repo to GitHub (already done).
+# 2. Go to https://dashboard.render.com → New → Blueprint → pick this repo.
+# 3. Render reads this file and provisions the service. Done.
+services:
+  - type: web
+    name: savora
+    runtime: node
+    plan: free
+    # --include=dev forces devDependencies (vite, esbuild, tsx) to install
+    # even though NODE_ENV=production is set, so the build can run.
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # Pin Node 22 so Vite 7 + the native SQLite module build cleanly.
+      - key: NODE_VERSION
+        value: "22.11.0"
+      - key: NODE_ENV
+        value: production
+      # Add Stripe / email keys here later (see .env.example), or in the dashboard.
