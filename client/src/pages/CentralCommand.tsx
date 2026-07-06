@@ -66,10 +66,6 @@ function greeting() {
   return "Good evening";
 }
 
-function pick<T>(arr: T[], seed: number) {
-  return arr[seed % arr.length];
-}
-
 function routeCommand(input: string): AgentId[] {
   const text = input.toLowerCase();
   const matched = AGENTS.filter((a) => a.keywords.some((k) => text.includes(k))).map((a) => a.id);
@@ -91,12 +87,19 @@ export default function CentralCommand() {
   const msgId = useRef(0);
   const logRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
   const later = (fn: () => void, ms: number) => { timers.current.push(setTimeout(fn, ms)); };
-  const addMsg = (m: Omit<LogMsg, "id">) => setLog((l) => [...l, { ...m, id: ++msgId.current }]);
+  const addMsg = (m: Omit<LogMsg, "id">) => {
+    const id = ++msgId.current;
+    setLog((l) => [...l, { ...m, id }]);
+    return id;
+  };
+  const appendMsg = (id: number, text: string) =>
+    setLog((l) => l.map((m) => (m.id === id ? { ...m, text: m.text + text } : m)));
 
-  useEffect(() => () => clearTimers(), []);
+  useEffect(() => () => { clearTimers(); abortRef.current?.abort(); }, []);
   useEffect(() => { logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" }); }, [log]);
 
   const say = useCallback((text: string) => {
@@ -109,37 +112,81 @@ export default function CentralCommand() {
     } catch { /* no-op */ }
   }, [voiceOn]);
 
-  const deploy = useCallback((raw: string) => {
+  const deploy = useCallback(async (raw: string) => {
     const command = raw.trim();
     if (!command || status === "deploying") return;
     clearTimers();
+    abortRef.current?.abort();
     setInput("");
     addMsg({ kind: "user", text: command });
 
     const ids = routeCommand(command);
-    const roster = ids.map((id) => AGENTS.find((a) => a.id === id)!).filter(Boolean);
-
     setStatus("deploying");
     setActive(new Set());
-    addMsg({ kind: "system", text: `Routing to ${roster.length} agent${roster.length > 1 ? "s" : ""}…` });
+    addMsg({ kind: "system", text: `Routing to ${ids.length} agent${ids.length > 1 ? "s" : ""}…` });
 
-    let t = 450;
-    roster.forEach((agent, i) => {
-      later(() => {
-        setActive((s) => new Set(s).add(agent.id));
-        addMsg({ kind: "agent", agent: agent.id, text: `${pick(agent.verbs, command.length + i)}…` });
-      }, t);
-      t += 900;
-    });
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    later(() => {
-      const summary = `Done. ${roster.map((r) => r.name).join(", ")} completed the task.`;
-      setStatus("speaking");
-      addMsg({ kind: "system", text: summary });
-      say(summary);
-    }, t + 300);
+    // Stream state: which log message is currently receiving text.
+    let currentId = 0;
+    let summaryId = 0;
+    let summaryText = "";
 
-    later(() => { setStatus("idle"); setActive(new Set()); }, t + 2600);
+    const handleEvent = (evt: any) => {
+      if (evt.type === "agent") {
+        const id = evt.id as AgentId;
+        if (!AGENTS.some((a) => a.id === id)) return;
+        setActive((s) => new Set(s).add(id));
+        currentId = addMsg({ kind: "agent", agent: id, text: "" });
+      } else if (evt.type === "summary") {
+        setStatus("speaking");
+        summaryId = addMsg({ kind: "system", text: "" });
+        currentId = summaryId;
+      } else if (evt.type === "delta") {
+        const text = evt.text as string;
+        if (currentId === 0) currentId = addMsg({ kind: "system", text: "" });
+        if (currentId === summaryId) summaryText += text;
+        appendMsg(currentId, text);
+      } else if (evt.type === "error") {
+        addMsg({ kind: "system", text: evt.message });
+      }
+    };
+
+    try {
+      const res = await fetch("/api/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command, agents: ids }),
+        signal: controller.signal,
+      });
+      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const frames = buf.split("\n\n");
+        buf = frames.pop() ?? "";
+        for (const frame of frames) {
+          const line = frame.split("\n").find((l) => l.startsWith("data: "));
+          if (!line) continue;
+          try { handleEvent(JSON.parse(line.slice(6))); } catch { /* skip */ }
+        }
+      }
+      if (summaryText) say(summaryText);
+    } catch (err: any) {
+      if (err?.name !== "AbortError") {
+        addMsg({ kind: "system", text: "Couldn't reach the command deck. Check the connection and try again." });
+      }
+    } finally {
+      if (abortRef.current === controller) {
+        later(() => { setStatus("idle"); setActive(new Set()); }, 1800);
+      }
+    }
   }, [status, say]);
 
   // ── Voice input via Web Speech API (optional, browser-native) ──
@@ -172,7 +219,7 @@ export default function CentralCommand() {
     }
   }, [voiceOn, status, deploy]);
 
-  const newChat = () => { clearTimers(); setLog([]); setActive(new Set()); setStatus("idle"); setInput(""); };
+  const newChat = () => { clearTimers(); abortRef.current?.abort(); setLog([]); setActive(new Set()); setStatus("idle"); setInput(""); };
 
   const statusMeta: Record<Status, { label: string; color: string }> = {
     idle:      { label: "Standing by",    color: "#3ba7ff" },

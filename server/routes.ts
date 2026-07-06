@@ -2,8 +2,12 @@ import type { Express } from "express";
 import { type Server } from "http";
 import { storage } from "./storage";
 import { insertWorkoutSessionSchema, insertExerciseSetSchema, insertPersonalRecordSchema, insertCardioSessionSchema } from "@shared/schema";
+import { registerCommandRoute } from "./command";
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  // Central Command — AI agent orchestration (SSE)
+  registerCommandRoute(app);
+
   // Workout Days (templates)
   app.get("/api/workout-days", (_req, res) => {
     const days = storage.getWorkoutDays();
