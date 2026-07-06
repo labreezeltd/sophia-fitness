@@ -10,6 +10,7 @@ import LogWorkout from "@/pages/LogWorkout";
 import Progress from "@/pages/Progress";
 import Protocol from "@/pages/Protocol";
 import Nutrition from "@/pages/Nutrition";
+import CentralCommand from "@/pages/CentralCommand";
 import NotFound from "@/pages/not-found";
 
 function AppLayout() {
@@ -25,6 +26,7 @@ function AppLayout() {
             <Route path="/progress" component={Progress} />
             <Route path="/nutrition" component={Nutrition} />
             <Route path="/protocol" component={Protocol} />
+            <Route path="/command" component={CentralCommand} />
             <Route component={NotFound} />
           </Switch>
         </main>

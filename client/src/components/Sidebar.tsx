@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useHashLocation } from "wouter/use-hash-location";
-import { LayoutDashboard, PlusCircle, TrendingUp, BookOpen, Utensils, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, PlusCircle, TrendingUp, BookOpen, Utensils, Sun, Moon, Command } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/progress", icon: TrendingUp, label: "Progress" },
   { href: "/nutrition", icon: Utensils, label: "Nutrition" },
   { href: "/protocol", icon: BookOpen, label: "Protocol" },
+  { href: "/command", icon: Command, label: "Command" },
 ];
 
 export function Sidebar() {
