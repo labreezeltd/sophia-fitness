@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 
 /* ────────────────────────────────────────────────────────────
-   CENTRAL COMMAND — an AI command deck.
-   Give it an instruction, it routes to the right agents and
-   "deploys" them, streaming their work in real time.
+   COMMAND CENTER — your personal AI command deck.
+   Give it a command and it routes to the right specialist
+   agents, deploying them and streaming their work in real time.
    ──────────────────────────────────────────────────────────── */
 
 type AgentId =
@@ -25,29 +25,28 @@ interface Agent {
   angle: number;   // degrees around the core
   radius: number;  // 0..1 distance from core
   keywords: string[];
-  verbs: string[]; // task phrasings when deployed
 }
 
 // Positioned to read as an organic constellation, two loose rings.
 const AGENTS: Agent[] = [
-  { id: "strategist",  name: "Strategist",    icon: Target,     angle: -78, radius: 0.62, keywords: ["strategy", "strategic", "plan", "roadmap", "vision", "goal", "objective", "priorit"], verbs: ["Framing the objective", "Drafting a 3-step roadmap", "Ranking priorities"] },
-  { id: "finance",     name: "Finance",       icon: DollarSign, angle: -40, radius: 0.72, keywords: ["finance", "money", "budget", "invoice", "revenue", "cost", "payment", "expense", "pricing", "cash"], verbs: ["Pulling the latest P&L", "Modeling the budget", "Reconciling invoices"] },
-  { id: "researcher",  name: "Researcher",    icon: Search,     angle: -122, radius: 0.68, keywords: ["research", "find", "investigate", "analyze", "study", "learn", "compare", "look up", "gather"], verbs: ["Scanning sources", "Synthesizing findings", "Compiling a brief"] },
-  { id: "chief",       name: "Chief of Staff",icon: Crown,      angle: -150, radius: 0.55, keywords: ["organize", "coordinate", "manage", "delegate", "assign", "handle", "sort out"], verbs: ["Coordinating the team", "Breaking down the request", "Delegating sub-tasks"] },
-  { id: "editor",      name: "Editor",        icon: PenLine,    angle: -8,  radius: 0.6,  keywords: ["edit", "write", "proofread", "draft", "copy", "rewrite", "polish", "article", "blog"], verbs: ["Drafting the copy", "Tightening the prose", "Proofreading"] },
-  { id: "memory",      name: "Memory",        icon: Brain,      angle: 24,  radius: 0.5,  keywords: ["remember", "recall", "note", "save", "log", "remind", "context", "history"], verbs: ["Recalling prior context", "Saving to long-term memory", "Indexing the note"] },
-  { id: "email",       name: "Email",         icon: Mail,       angle: 46,  radius: 0.74, keywords: ["email", "inbox", "reply", "mail", "compose", "respond"], verbs: ["Triaging the inbox", "Drafting a reply", "Scheduling send"] },
-  { id: "design",      name: "Design",        icon: Palette,    angle: 30,  radius: 0.66, keywords: ["design", "mockup", "ui", "ux", "brand", "logo", "graphic", "visual", "layout"], verbs: ["Sketching layouts", "Building a mockup", "Refining the visual system"] },
-  { id: "engineering", name: "Engineering",   icon: Code2,      angle: 62,  radius: 0.58, keywords: ["build", "ship", "deploy", "feature", "bug", "fix", "release", "implement", "code"], verbs: ["Scaffolding the feature", "Running the build", "Deploying to staging"] },
-  { id: "calendar",    name: "Calendar",      icon: Calendar,   angle: 82,  radius: 0.7,  keywords: ["calendar", "meeting", "schedule", "appointment", "event", "book", "invite", "call"], verbs: ["Checking availability", "Booking the slot", "Sending invites"] },
-  { id: "crm",         name: "CRM",           icon: Users,      angle: 108, radius: 0.62, keywords: ["crm", "contact", "lead", "customer", "client", "relationship", "pipeline", "follow up"], verbs: ["Updating the pipeline", "Enriching the contact", "Logging the touchpoint"] },
-  { id: "social",      name: "Social",        icon: Share2,     angle: 98,  radius: 0.5,  keywords: ["social", "post", "tweet", "instagram", "content", "followers", "reel", "story", "feed"], verbs: ["Drafting the post", "Scheduling the feed", "Generating captions"] },
-  { id: "analytics",   name: "Analytics",     icon: BarChart3,  angle: 132, radius: 0.72, keywords: ["analytics", "metrics", "data", "report", "kpi", "dashboard", "numbers", "trend", "stat"], verbs: ["Querying the metrics", "Charting the trend", "Building the report"] },
-  { id: "marketing",   name: "Marketing",     icon: Megaphone,  angle: 152, radius: 0.6,  keywords: ["marketing", "campaign", "ads", "launch", "seo", "growth", "audience", "promote"], verbs: ["Planning the campaign", "Drafting ad copy", "Mapping the funnel"] },
-  { id: "sales",       name: "Sales",         icon: Handshake,  angle: 168, radius: 0.5,  keywords: ["sales", "pitch", "deal", "quota", "outreach", "close", "prospect", "quote"], verbs: ["Building the pitch", "Sequencing outreach", "Qualifying the deal"] },
-  { id: "ops",         name: "Ops",           icon: Workflow,   angle: -168,radius: 0.66, keywords: ["ops", "operations", "process", "workflow", "automate", "sop", "pipeline"], verbs: ["Mapping the workflow", "Automating the step", "Documenting the SOP"] },
-  { id: "developer",   name: "Developer",     icon: Terminal,   angle: -196,radius: 0.74, keywords: ["dev", "integrate", "script", "webhook", "backend", "database", "api", "endpoint"], verbs: ["Wiring the integration", "Writing the script", "Testing the endpoint"] },
-  { id: "drive",       name: "Drive",         icon: HardDrive,  angle: 8,   radius: 0.78, keywords: ["file", "document", "drive", "upload", "store", "folder", "doc", "spreadsheet"], verbs: ["Locating the files", "Organizing the folder", "Sharing the doc"] },
+  { id: "strategist",  name: "Strategist",    icon: Target,     angle: -78,  radius: 0.62, keywords: ["strategy", "strategic", "plan", "roadmap", "vision", "goal", "objective", "priorit", "decide", "decision"] },
+  { id: "finance",     name: "Finance",       icon: DollarSign, angle: -40,  radius: 0.72, keywords: ["finance", "money", "budget", "invoice", "revenue", "cost", "payment", "expense", "pricing", "cash", "bill", "spend", "save"] },
+  { id: "researcher",  name: "Researcher",    icon: Search,     angle: -122, radius: 0.68, keywords: ["research", "find", "investigate", "analyze", "study", "learn", "compare", "look up", "gather", "options"] },
+  { id: "chief",       name: "Chief of Staff",icon: Crown,      angle: -150, radius: 0.55, keywords: ["organize", "coordinate", "manage", "delegate", "assign", "handle", "sort out", "help me", "everything"] },
+  { id: "editor",      name: "Editor",        icon: PenLine,    angle: -8,   radius: 0.6,  keywords: ["edit", "write", "proofread", "draft", "copy", "rewrite", "polish", "article", "blog", "message", "post"] },
+  { id: "memory",      name: "Memory",        icon: Brain,      angle: 24,   radius: 0.5,  keywords: ["remember", "recall", "note", "save", "log", "remind", "context", "history", "don't forget"] },
+  { id: "email",       name: "Email",         icon: Mail,       angle: 46,   radius: 0.74, keywords: ["email", "inbox", "reply", "mail", "compose", "respond", "unsubscribe", "follow up"] },
+  { id: "design",      name: "Design",        icon: Palette,    angle: 30,   radius: 0.66, keywords: ["design", "mockup", "ui", "ux", "brand", "logo", "graphic", "visual", "layout", "look"] },
+  { id: "engineering", name: "Engineering",   icon: Code2,      angle: 62,   radius: 0.58, keywords: ["build", "ship", "deploy", "feature", "bug", "fix", "release", "implement", "code", "app", "website"] },
+  { id: "calendar",    name: "Calendar",      icon: Calendar,   angle: 82,   radius: 0.7,  keywords: ["calendar", "meeting", "schedule", "appointment", "event", "book", "invite", "call", "block", "week", "time", "reminder"] },
+  { id: "crm",         name: "CRM",           icon: Users,      angle: 108,  radius: 0.62, keywords: ["crm", "contact", "lead", "customer", "client", "relationship", "pipeline", "network", "reach out"] },
+  { id: "social",      name: "Social",        icon: Share2,     angle: 98,   radius: 0.5,  keywords: ["social", "post", "tweet", "instagram", "content", "followers", "reel", "story", "feed", "linkedin"] },
+  { id: "analytics",   name: "Analytics",     icon: BarChart3,  angle: 132,  radius: 0.72, keywords: ["analytics", "metrics", "data", "report", "kpi", "dashboard", "numbers", "trend", "stat", "track"] },
+  { id: "marketing",   name: "Marketing",     icon: Megaphone,  angle: 152,  radius: 0.6,  keywords: ["marketing", "campaign", "ads", "launch", "seo", "growth", "audience", "promote"] },
+  { id: "sales",       name: "Sales",         icon: Handshake,  angle: 168,  radius: 0.5,  keywords: ["sales", "pitch", "deal", "quota", "outreach", "close", "prospect", "quote", "sell"] },
+  { id: "ops",         name: "Ops",           icon: Workflow,   angle: -168, radius: 0.66, keywords: ["ops", "operations", "process", "workflow", "automate", "sop", "routine", "chore", "errand"] },
+  { id: "developer",   name: "Developer",     icon: Terminal,   angle: -196, radius: 0.74, keywords: ["dev", "integrate", "script", "webhook", "backend", "database", "api", "endpoint"] },
+  { id: "drive",       name: "Drive",         icon: HardDrive,  angle: 8,    radius: 0.78, keywords: ["file", "document", "drive", "upload", "store", "folder", "doc", "spreadsheet", "receipt", "scan"] },
 ];
 
 type Status = "idle" | "listening" | "deploying" | "speaking";
@@ -58,6 +57,9 @@ interface LogMsg {
   agent?: AgentId;
   text: string;
 }
+
+// Personalize your greeting here.
+const OWNER = "Boss";
 
 function greeting() {
   const h = new Date().getHours();
@@ -70,10 +72,16 @@ function routeCommand(input: string): AgentId[] {
   const text = input.toLowerCase();
   const matched = AGENTS.filter((a) => a.keywords.some((k) => text.includes(k))).map((a) => a.id);
   if (matched.length === 0) return ["chief", "strategist"];
-  // Chief of Staff always coordinates a multi-agent job.
   if (matched.length > 1 && !matched.includes("chief")) return ["chief", ...matched];
   return matched;
 }
+
+const PROMPT_EXAMPLES = [
+  "Plan my week and block focus time",
+  "Draft a reply to the landlord about the lease",
+  "Research the best options and give me a recommendation",
+  "Summarize what I need to do today",
+];
 
 export default function CentralCommand() {
   const [status, setStatus] = useState<Status>("idle");
@@ -81,7 +89,7 @@ export default function CentralCommand() {
   const [voiceOn, setVoiceOn] = useState(false);
   const [active, setActive] = useState<Set<AgentId>>(new Set());
   const [log, setLog] = useState<LogMsg[]>([]);
-  const [name] = useState("Commander");
+  const [placeholder] = useState(() => PROMPT_EXAMPLES[new Date().getSeconds() % PROMPT_EXAMPLES.length]);
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const msgId = useRef(0);
@@ -128,7 +136,6 @@ export default function CentralCommand() {
     const controller = new AbortController();
     abortRef.current = controller;
 
-    // Stream state: which log message is currently receiving text.
     let currentId = 0;
     let summaryId = 0;
     let summaryText = "";
@@ -189,7 +196,7 @@ export default function CentralCommand() {
     }
   }, [status, say]);
 
-  // ── Voice input via Web Speech API (optional, browser-native) ──
+  // ── Voice input via Web Speech API (browser-native; needs HTTPS on iOS) ──
   const toggleVoice = useCallback(() => {
     const next = !voiceOn;
     setVoiceOn(next);
@@ -201,7 +208,7 @@ export default function CentralCommand() {
       if (status === "listening") setStatus("idle");
       return;
     }
-    if (!SR) { addMsg({ kind: "system", text: "Voice not supported in this browser — type your command." }); return; }
+    if (!SR) { addMsg({ kind: "system", text: "Voice input isn't supported in this browser — type your command instead." }); return; }
     try {
       const rec = new SR();
       rec.lang = "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
@@ -222,26 +229,27 @@ export default function CentralCommand() {
   const newChat = () => { clearTimers(); abortRef.current?.abort(); setLog([]); setActive(new Set()); setStatus("idle"); setInput(""); };
 
   const statusMeta: Record<Status, { label: string; color: string }> = {
-    idle:      { label: "Standing by",    color: "#3ba7ff" },
+    idle:      { label: "Standing by",           color: "#3ba7ff" },
     listening: { label: "Listening — tap to stop", color: "#ff5a5a" },
-    deploying: { label: "Deploying agents", color: "#f5b93b" },
-    speaking:  { label: "Speaking",        color: "#f5b93b" },
+    deploying: { label: "Deploying agents",       color: "#f5b93b" },
+    speaking:  { label: "Speaking",               color: "#f5b93b" },
   };
   const isBusy = status === "deploying" || status === "speaking";
 
   return (
     <div className="relative h-full w-full overflow-hidden text-slate-100"
       style={{ background: "radial-gradient(120% 100% at 50% 0%, #0a1830 0%, #050b1a 55%, #02060f 100%)" }}
-      data-testid="central-command">
+      data-testid="command-center">
       {/* faint grid */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.12]"
         style={{ backgroundImage: "linear-gradient(#1e4b8f 1px, transparent 1px), linear-gradient(90deg, #1e4b8f 1px, transparent 1px)", backgroundSize: "44px 44px" }} />
 
       {/* ── Top bar ── */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-start justify-between p-5 md:p-7">
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-start justify-between p-5 md:p-7"
+        style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}>
         <div>
           <p className="text-[11px] tracking-[0.3em] text-cyan-300/70 uppercase">{greeting()},</p>
-          <h1 className="text-xl md:text-2xl font-semibold tracking-wide text-cyan-100">{name}</h1>
+          <h1 className="text-xl md:text-2xl font-semibold tracking-wide text-cyan-100">{OWNER}</h1>
         </div>
         <button onClick={newChat} data-testid="button-new-chat"
           className="flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1.5 text-xs font-medium text-cyan-200 transition-colors hover:bg-cyan-400/20">
@@ -254,7 +262,7 @@ export default function CentralCommand() {
         <div className="relative aspect-square w-full max-w-[560px]">
           <Constellation active={active} isBusy={isBusy} onPoke={(id) => {
             const a = AGENTS.find((x) => x.id === id)!;
-            deploy(`Have ${a.name} take a look`);
+            deploy(`Have ${a.name} take a look at what needs doing`);
           }} />
         </div>
       </div>
@@ -286,7 +294,8 @@ export default function CentralCommand() {
       </AnimatePresence>
 
       {/* ── Command bar ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-30 p-4 md:p-6">
+      <div className="absolute bottom-0 left-0 right-0 z-30 p-4 md:p-6"
+        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
         {/* mobile log */}
         {log.length > 0 && (
           <div ref={logRef} className="mx-auto mb-3 max-h-32 w-full max-w-2xl overflow-y-auto rounded-xl border border-cyan-400/15 bg-slate-950/40 p-2.5 backdrop-blur-md lg:hidden">
@@ -305,7 +314,7 @@ export default function CentralCommand() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Give a command — e.g. “Research competitors and draft a launch plan”"
+            placeholder={`Give a command — e.g. “${placeholder}”`}
             data-testid="input-command"
             className="min-w-0 flex-1 bg-transparent px-1 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none" />
           <button type="submit" disabled={!input.trim() || status === "deploying"} data-testid="button-send"
@@ -330,7 +339,7 @@ function Constellation({ active, isBusy, onPoke }: { active: Set<AgentId>; isBus
   const nodes = useMemo(() =>
     AGENTS.map((a) => {
       const rad = (a.angle * Math.PI) / 180;
-      const R = a.radius * 46; // % of half-size
+      const R = a.radius * 46;
       return { ...a, x: 50 + Math.cos(rad) * R, y: 50 + Math.sin(rad) * R };
     }), []);
 
@@ -437,7 +446,7 @@ function LogList({ log }: { log: LogMsg[] }) {
         }
         if (m.kind === "system") {
           return (
-            <div key={m.id} className="px-1 text-[11px] italic text-slate-400" data-testid="log-system">{m.text}</div>
+            <div key={m.id} className="px-1 text-[11px] italic text-slate-400 whitespace-pre-wrap" data-testid="log-system">{m.text}</div>
           );
         }
         const agent = AGENTS.find((a) => a.id === m.agent);
@@ -445,7 +454,7 @@ function LogList({ log }: { log: LogMsg[] }) {
         return (
           <div key={m.id} className="flex items-start gap-2 px-1 text-[11px] text-amber-100/90" data-testid="log-agent">
             <Icon className="mt-0.5 h-3 w-3 shrink-0 text-amber-300" />
-            <span><span className="font-semibold text-amber-300">{agent?.name}:</span> {m.text}</span>
+            <span className="whitespace-pre-wrap"><span className="font-semibold text-amber-300">{agent?.name}:</span> {m.text}</span>
           </div>
         );
       })}
