@@ -1,0 +1,23 @@
+# Render blueprint — deploys the Command Center.
+# One-time setup: in the Render dashboard, New → Blueprint, pick this repo,
+# then set the ANTHROPIC_API_KEY value when prompted (it is not stored in the repo).
+services:
+  - type: web
+    name: command-center
+    runtime: node
+    plan: free # sleeps after ~15 min idle on free tier; upgrade to keep it warm
+    branch: claude/central-command-dashboard-9e2s54
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22.22.2"
+      - key: NODE_ENV
+        value: production
+      # Required for the agents to reach Claude.
+      # Marked secret (sync:false) — enter the value in the Render dashboard.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Render injects PORT automatically; the server reads process.env.PORT.
