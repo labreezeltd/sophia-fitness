@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KAIRO — DJ Portfolio</title>
+<meta name="description" content="KAIRO — melodic techno &amp; afterhours house. Mixes, tour dates and bookings.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A7%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<style>
+  :root{
+    --ground:#0B0713;
+    --ground-2:#150C22;
+    --panel:#1B1030;
+    --line:rgba(244,238,255,.10);
+    --text:#F4EEFF;
+    --muted:#9A8FB5;
+    --magenta:#FF2E9A;
+    --cyan:#21E6FF;
+    --amber:#FFB627;
+    --maxw:1180px;
+    --mono:ui-monospace,"SF Mono","Roboto Mono","Cascadia Mono",Menlo,Consolas,monospace;
+    --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ground);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono)}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .grad-text{
+    background:linear-gradient(100deg,var(--magenta),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky;top:0;z-index:60;
+    backdrop-filter:blur(14px);
+    background:linear-gradient(180deg,rgba(11,7,19,.92),rgba(11,7,19,.55));
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{
+    font-weight:800;letter-spacing:.14em;font-size:19px;text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+  }
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--magenta);
+    box-shadow:0 0 14px var(--magenta);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--muted);
+    text-transform:uppercase;transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+    padding:12px 22px;border-radius:100px;border:1px solid transparent;cursor:pointer;
+    transition:transform .2s,box-shadow .2s,background .2s;
+  }
+  .btn-amber{background:var(--amber);color:#2A1600;font-weight:700}
+  .btn-amber:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,182,39,.35)}
+  .btn-ghost{border-color:var(--line);color:var(--text);background:rgba(244,238,255,.03)}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+  .nav .btn{padding:10px 18px}
+  @media(max-width:820px){.nav-links a:not(.btn){display:none}}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;min-height:92vh;display:flex;align-items:center;overflow:hidden}
+  #wave{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.9}
+  .hero-glow{position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(60% 50% at 15% 20%,rgba(255,46,154,.22),transparent 60%),
+      radial-gradient(55% 55% at 85% 80%,rgba(33,230,255,.20),transparent 60%),
+      linear-gradient(180deg,rgba(11,7,19,.15),rgba(11,7,19,.85) 88%);}
+  .hero-inner{position:relative;z-index:2;width:100%;padding-top:40px;padding-bottom:40px}
+  .hero .status{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
+    border:1px solid var(--line);border-radius:100px;padding:7px 14px 7px 12px;
+    background:rgba(27,16,48,.55);font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted)}
+  .status .live{width:8px;height:8px;border-radius:50%;background:var(--cyan);
+    box-shadow:0 0 12px var(--cyan);animation:pulse 1.4s infinite}
+  h1.name{
+    font-weight:800;line-height:.86;letter-spacing:-.02em;text-transform:uppercase;
+    font-size:clamp(72px,17vw,220px);text-wrap:balance;
+    filter:drop-shadow(0 20px 60px rgba(255,46,154,.18));
+  }
+  .tagline{max-width:44ch;margin-top:22px;font-size:clamp(16px,2vw,20px);color:var(--muted)}
+  .tagline b{color:var(--text);font-weight:600}
+  .hero-cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+  .hero-meta{display:flex;gap:34px;margin-top:44px;flex-wrap:wrap}
+  .hero-meta .m .k{font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted)}
+  .hero-meta .m .v{font-size:26px;font-weight:800;margin-top:4px}
+
+  /* ---------- Marquee ---------- */
+  .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:var(--ground-2);overflow:hidden;padding:18px 0}
+  .marquee .track{display:flex;gap:44px;white-space:nowrap;width:max-content;
+    animation:scroll 26s linear infinite}
+  .marquee span{font-weight:800;text-transform:uppercase;letter-spacing:.02em;
+    font-size:22px;color:var(--muted);display:inline-flex;align-items:center;gap:44px}
+  .marquee span::after{content:"◆";color:var(--magenta);font-size:12px}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- Section shell ---------- */
+  section{padding:110px 0}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+    margin-bottom:52px;flex-wrap:wrap}
+  .sec-head h2{font-size:clamp(34px,5vw,60px);font-weight:800;letter-spacing:-.02em;
+    text-transform:uppercase;line-height:.95}
+  .sec-head p{color:var(--muted);max-width:38ch}
+
+  /* ---------- Mixes / tracklist ---------- */
+  .tracks{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;
+    overflow:hidden;background:linear-gradient(180deg,var(--ground-2),var(--ground))}
+  .row{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:18px;
+    padding:20px 22px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .2s}
+  .row:last-child{border-bottom:none}
+  .row:hover{background:rgba(255,46,154,.06)}
+  .row.active{background:linear-gradient(90deg,rgba(255,46,154,.12),rgba(33,230,255,.06))}
+  .play{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
+    display:grid;place-items:center;background:rgba(244,238,255,.04);color:var(--text);
+    transition:.2s;flex:none}
+  .row:hover .play,.row.active .play{border-color:var(--magenta);color:var(--magenta)}
+  .t-main .t-title{font-size:19px;font-weight:700;letter-spacing:-.01em}
+  .t-main .t-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:5px;
+    display:flex;gap:14px;flex-wrap:wrap}
+  .t-sub .tag{color:var(--cyan)}
+  .t-sub .bpm{color:var(--amber)}
+  .t-right{display:flex;align-items:center;gap:22px}
+  .t-dur{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  /* equalizer */
+  .eq{display:flex;align-items:flex-end;gap:3px;height:22px;width:26px;opacity:.35}
+  .row.active .eq{opacity:1}
+  .eq i{width:4px;background:linear-gradient(var(--cyan),var(--magenta));height:30%;border-radius:2px}
+  .row.active .eq i{animation:bounce .9s ease-in-out infinite}
+  .eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}
+  .eq i:nth-child(4){animation-delay:.45s}
+  @keyframes bounce{0%,100%{height:25%}50%{height:100%}}
+  @media(max-width:640px){.t-dur{display:none}.row{grid-template-columns:48px 1fr auto}}
+
+  /* ---------- Gigs ---------- */
+  .gigs{display:flex;flex-direction:column;gap:2px}
+  .gig{display:grid;grid-template-columns:130px 1fr auto;gap:22px;align-items:center;
+    padding:26px 4px;border-bottom:1px solid var(--line);transition:padding-left .25s,background .25s}
+  .gig:hover{padding-left:16px;background:linear-gradient(90deg,rgba(33,230,255,.06),transparent)}
+  .gig .date{font-family:var(--mono);font-size:14px}
+  .gig .date .d{font-size:26px;font-weight:800;color:var(--text)}
+  .gig .date .mo{color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-size:12px}
+  .gig .venue{font-size:22px;font-weight:700}
+  .gig .city{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:4px;
+    letter-spacing:.04em;text-transform:uppercase}
+  .gig .status{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    padding:8px 16px;border-radius:100px;border:1px solid var(--line);white-space:nowrap}
+  .gig .status.tix{color:var(--amber);border-color:rgba(255,182,39,.4)}
+  .gig .status.soldout{color:var(--muted)}
+  @media(max-width:640px){.gig{grid-template-columns:74px 1fr;grid-template-rows:auto auto}
+    .gig .status{grid-column:2}}
+
+  /* ---------- About ---------- */
+  .about{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+  .about-visual{position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;
+    border:1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 20% 0%,rgba(255,46,154,.55),transparent 55%),
+      radial-gradient(120% 90% at 100% 100%,rgba(33,230,255,.5),transparent 55%),
+      linear-gradient(160deg,#241238,#0B0713);}
+  .about-visual .ring{position:absolute;inset:0;display:grid;place-items:center}
+  .about-visual .disc{width:56%;aspect-ratio:1;border-radius:50%;
+    background:conic-gradient(from 0deg,#2a1740,#0B0713,#2a1740,#0B0713,#2a1740);
+    border:1px solid rgba(244,238,255,.14);position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,.5);animation:spin 8s linear infinite}
+  .about-visual .disc::before{content:"";position:absolute;inset:0;margin:auto;
+    width:22%;aspect-ratio:1;border-radius:50%;background:var(--magenta);
+    box-shadow:0 0 30px var(--magenta)}
+  .about-visual .disc::after{content:"";position:absolute;inset:0;margin:auto;
+    width:6%;aspect-ratio:1;border-radius:50%;background:var(--ground)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .about-body h3{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em;
+    line-height:1.05;text-transform:uppercase;margin-bottom:22px}
+  .about-body p{color:var(--muted);margin-bottom:18px;max-width:52ch}
+  .about-body p b{color:var(--text);font-weight:600}
+  .stats{display:flex;gap:40px;margin-top:30px;flex-wrap:wrap}
+  .stats .s .n{font-size:34px;font-weight:800}
+  .stats .s .l{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin-top:2px}
+  @media(max-width:820px){.about{grid-template-columns:1fr;gap:40px}}
+
+  /* ---------- Genres ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:14px}
+  .chip{font-family:var(--mono);font-size:14px;letter-spacing:.04em;text-transform:uppercase;
+    padding:14px 22px;border-radius:100px;border:1px solid var(--line);color:var(--muted);
+    transition:.2s;cursor:default}
+  .chip:hover{color:var(--text);border-color:var(--cyan);transform:translateY(-2px)}
+
+  /* ---------- Booking ---------- */
+  .book{background:linear-gradient(160deg,#1B1030,#0B0713);border:1px solid var(--line);
+    border-radius:24px;padding:clamp(30px,5vw,64px);position:relative;overflow:hidden}
+  .book::before{content:"";position:absolute;top:-40%;right:-10%;width:60%;height:120%;
+    background:radial-gradient(circle,rgba(255,46,154,.25),transparent 65%);pointer-events:none}
+  .book-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;position:relative;z-index:1}
+  .book h2{font-size:clamp(32px,4.4vw,54px);font-weight:800;text-transform:uppercase;
+    letter-spacing:-.02em;line-height:.95;margin-bottom:18px}
+  .book p{color:var(--muted);max-width:40ch;margin-bottom:26px}
+  .contact-line{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:15px;
+    margin-bottom:12px}
+  .contact-line .ic{color:var(--cyan)}
+  form{display:flex;flex-direction:column;gap:14px}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted)}
+  .field input,.field select,.field textarea{
+    background:rgba(11,7,19,.6);border:1px solid var(--line);border-radius:12px;
+    padding:13px 15px;color:var(--text);font-family:var(--sans);font-size:15px;transition:border .2s}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--magenta)}
+  .field textarea{resize:vertical;min-height:80px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  form .btn-amber{margin-top:6px;justify-content:center}
+  .form-note{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
+  @media(max-width:820px){.book-grid{grid-template-columns:1fr;gap:30px}}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);padding:56px 0 40px;background:var(--ground-2)}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  .foot .socials{display:flex;gap:14px}
+  .foot .socials a{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
+    display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--muted);
+    transition:.2s;letter-spacing:.02em}
+  .foot .socials a:hover{color:var(--ground);background:var(--cyan);border-color:var(--cyan)}
+  .foot .copy{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand"><span class="dot"></span>KAIRO</div>
+    <nav class="nav-links">
+      <a href="#mixes">Mixes</a>
+      <a href="#dates">Dates</a>
+      <a href="#about">About</a>
+      <a href="#book" class="btn btn-amber">Book Kairo</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <canvas id="wave"></canvas>
+  <div class="hero-glow"></div>
+  <div class="wrap hero-inner">
+    <div class="status"><span class="live"></span>Now Playing — Boiler Room, Berlin</div>
+    <h1 class="name">KA<span class="grad-text">I</span>RO</h1>
+    <p class="tagline"><b>Melodic techno &amp; afterhours house.</b> Sound that starts in the chest and doesn't let go until the lights come up.</p>
+    <div class="hero-cta">
+      <a href="#mixes" class="btn btn-amber">▶ Listen to the latest set</a>
+      <a href="#book" class="btn btn-ghost">Book for your event</a>
+    </div>
+    <div class="hero-meta">
+      <div class="m"><div class="k">Based in</div><div class="v">Berlin / London</div></div>
+      <div class="m"><div class="k">Shows in 2025</div><div class="v">80+</div></div>
+      <div class="m"><div class="k">Monthly listeners</div><div class="v">240K</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Fabric London</span><span>Awakenings</span><span>Printworks</span><span>Watergate</span>
+    <span>Tomorrowland</span><span>De School</span><span>Sub Club</span><span>DC-10 Ibiza</span>
+    <span>Fabric London</span><span>Awakenings</span><span>Printworks</span><span>Watergate</span>
+    <span>Tomorrowland</span><span>De School</span><span>Sub Club</span><span>DC-10 Ibiza</span>
+  </div>
+</div>
+
+<section id="mixes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">Selected sets</div>
+        <h2>Latest mixes</h2>
+      </div>
+      <p>Recorded live and studio-cut. Tap a track to feel the room — full sets stream on all platforms.</p>
+    </div>
+    <div class="tracks reveal">
+      <div class="row active" data-title="Midnight Frequencies Vol.4">
+        <div class="play">▶</div>
+        <div class="t-main">
+          <div class="t-title">Midnight Frequencies — Vol. 4</div>
+          <div class="t-sub"><span class="tag">Melodic Techno</span><span class="bpm">124 BPM</span><span>Key A min</span><span>Live @ Watergate</span></div>
+        </div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">68:14</div></div>
+      </div>
+      <div class="row" data-title="Concrete Sunrise">
+        <div class="play">▶</div>
+        <div class="t-main">
+          <div class="t-title">Concrete Sunrise</div>
+          <div class="t-sub"><span class="tag">Afterhours House</span><span class="bpm">122 BPM</span><span>Key F min</span><span>Studio Mix</span></div>
+        </div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">54:02</div></div>
+      </div>
+      <div class="row" data-title="Neon Cathedral">
+        <div class="play">▶</div>
+        <div class="t-main">
+          <div class="t-title">Neon Cathedral</div>
+          <div class="t-sub"><span class="tag">Progressive</span><span class="bpm">126 BPM</span><span>Key C min</span><span>Awakenings Set</span></div>
+        </div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">72:47</div></div>
+      </div>
+      <div class="row" data-title="Low Orbit">
+        <div class="play">▶</div>
+        <div class="t-main">
+          <div class="t-title">Low Orbit</div>
+          <div class="t-sub"><span class="tag">Deep / Dub</span><span class="bpm">120 BPM</span><span>Key G min</span><span>Sunset Session</span></div>
+        </div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">61:30</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dates" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="eyebrow">On tour</div>
+        <h2>Upcoming dates</h2>
+      </div>
+      <p>Catch a live set this season. New shows drop first to the mailing list.</p>
+    </div>
+    <div class="gigs reveal">
+      <div class="gig">
+        <div class="date"><span class="d">24</span> <span class="mo">Aug</span></div>
+        <div><div class="venue">Printworks</div><div class="city">London · UK</div></div>
+        <div class="status tix">Tickets</div>
+      </div>
+      <div class="gig">
+        <div class="date"><span class="d">06</span> <span class="mo">Sep</span></div>
+        <div><div class="venue">Watergate</div><div class="city">Berlin · DE</div></div>
+        <div class="status soldout">Sold out</div>
+      </div>
+      <div class="gig">
+        <div class="date"><span class="d">19</span> <span class="mo">Sep</span></div>
+        <div><div class="venue">DC-10 · Terrace</div><div class="city">Ibiza · ES</div></div>
+        <div class="status tix">Tickets</div>
+      </div>
+      <div class="gig">
+        <div class="date"><span class="d">11</span> <span class="mo">Oct</span></div>
+        <div><div class="venue">Sub Club</div><div class="city">Glasgow · UK</div></div>
+        <div class="status tix">Tickets</div>
+      </div>
+      <div class="gig">
+        <div class="date"><span class="d">31</span> <span class="mo">Oct</span></div>
+        <div><div class="venue">Halloween Warehouse</div><div class="city">Amsterdam · NL</div></div>
+        <div class="status tix">Tickets</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" style="padding-top:0">
+  <div class="wrap about">
+    <div class="about-visual reveal" aria-hidden="true">
+      <div class="ring"><div class="disc"></div></div>
+    </div>
+    <div class="about-body reveal">
+      <div class="eyebrow" style="margin-bottom:16px">The artist</div>
+      <h3>Ten years reading the floor</h3>
+      <p><b>Kairo</b> has spent a decade turning warehouses, terraces and cathedrals of sound into single, breathing organisms. What started as bedroom edits in East London is now a passport full of stamps and a signature blend of melodic techno and afterhours house.</p>
+      <p>Every set is built live, in the moment — no two nights the same. The through-line is feeling: hypnotic low-end, arms-up melodies, and that one drop the whole room remembers on the walk home.</p>
+      <div class="stats">
+        <div class="s"><div class="n grad-text">10 yrs</div><div class="l">Behind the decks</div></div>
+        <div class="s"><div class="n grad-text">32</div><div class="l">Countries played</div></div>
+        <div class="s"><div class="n grad-text">4M+</div><div class="l">Streams</div></div>
+      </div>
+      <div class="chips" style="margin-top:34px">
+        <span class="chip">Melodic Techno</span><span class="chip">Afterhours House</span>
+        <span class="chip">Progressive</span><span class="chip">Deep / Dub</span><span class="chip">Open-to-close</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="book" style="padding-top:0">
+  <div class="wrap">
+    <div class="book reveal">
+      <div class="book-grid">
+        <div>
+          <div class="eyebrow" style="margin-bottom:16px">Bookings &amp; press</div>
+          <h2>Bring Kairo to your floor</h2>
+          <p>Clubs, festivals, private events and brand nights. Tell us the date and the vibe — we'll handle the rest.</p>
+          <div class="contact-line"><span class="ic">✉</span> bookings@kairo.dj</div>
+          <div class="contact-line"><span class="ic">☎</span> +44 20 7946 0000</div>
+          <div class="contact-line"><span class="ic">◎</span> Worldwide · Repped by Nightform Agency</div>
+        </div>
+        <form id="bookform">
+          <div class="row2">
+            <div class="field"><label>Your name</label><input required placeholder="Jordan Blake"></div>
+            <div class="field"><label>Email</label><input type="email" required placeholder="you@venue.com"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Event date</label><input type="date"></div>
+            <div class="field"><label>Type</label>
+              <select><option>Club night</option><option>Festival</option><option>Private event</option><option>Brand / corporate</option></select>
+            </div>
+          </div>
+          <div class="field"><label>Tell us about the night</label><textarea placeholder="Venue, capacity, set length, budget range…"></textarea></div>
+          <button type="submit" class="btn btn-amber">Send booking enquiry</button>
+          <div class="form-note" id="formnote">Typical reply within 48 hours.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div class="brand"><span class="dot"></span>KAIRO</div>
+    <div class="socials">
+      <a href="#" aria-label="Instagram">IG</a>
+      <a href="#" aria-label="SoundCloud">SC</a>
+      <a href="#" aria-label="Spotify">SP</a>
+      <a href="#" aria-label="YouTube">YT</a>
+      <a href="#" aria-label="Beatport">BP</a>
+    </div>
+    <div class="copy">© 2025 Kairo · Mockup by your studio</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Hero waveform ---- */
+  var canvas = document.getElementById('wave');
+  if(canvas){
+    var ctx = canvas.getContext('2d');
+    var w,h,dpr;
+    function size(){
+      dpr = Math.min(window.devicePixelRatio||1,2);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w*dpr; canvas.height = h*dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    size(); window.addEventListener('resize', size);
+    var t = 0;
+    var bars = 90;
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+      var mid = h*0.62;
+      var bw = w/bars;
+      for(var i=0;i<bars;i++){
+        var x = i*bw;
+        var n = Math.sin(i*0.35 + t) * Math.cos(i*0.12 - t*0.7);
+        var amp = (0.28 + 0.72*Math.abs(n)) * (h*0.30);
+        // seed a little variation so it feels like real audio
+        amp *= 0.6 + 0.4*Math.abs(Math.sin(i*1.7 + t*1.3));
+        var g = ctx.createLinearGradient(0, mid-amp, 0, mid+amp);
+        g.addColorStop(0,'rgba(33,230,255,0.85)');
+        g.addColorStop(1,'rgba(255,46,154,0.85)');
+        ctx.fillStyle = g;
+        var bwi = Math.max(2, bw*0.42);
+        roundRect(x + (bw-bwi)/2, mid-amp, bwi, amp*2, bwi/2);
+      }
+      if(!reduce){ t += 0.045; requestAnimationFrame(draw); }
+    }
+    function roundRect(x,y,wd,ht,r){
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.arcTo(x+wd,y,x+wd,y+ht,r);
+      ctx.arcTo(x+wd,y+ht,x,y+ht,r);
+      ctx.arcTo(x,y+ht,x,y,r);
+      ctx.arcTo(x,y,x+wd,y,r);
+      ctx.closePath(); ctx.fill();
+    }
+    draw();
+  }
+
+  /* ---- Tracklist: activate row ---- */
+  var rows = document.querySelectorAll('.row');
+  var status = document.querySelector('.hero .status');
+  rows.forEach(function(r){
+    r.addEventListener('click', function(){
+      rows.forEach(function(x){x.classList.remove('active');x.querySelector('.play').textContent='▶';});
+      r.classList.add('active');
+      r.querySelector('.play').textContent='❚❚';
+    });
+  });
+
+  /* ---- Booking form (mockup) ---- */
+  var form = document.getElementById('bookform');
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var note = document.getElementById('formnote');
+      note.textContent = '✓ Enquiry sent — this is a mockup, wire it to email or a form service to go live.';
+      note.style.color = '#21E6FF';
+      form.reset();
+    });
+  }
+
+  /* ---- Scroll reveal ---- */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} });
+    },{threshold:.14});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+  }
+})();
+</script>
+
+</body>
+</html>
