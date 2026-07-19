@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KAIRO — DJ Portfolio</title>
-<meta name="description" content="KAIRO — melodic techno &amp; afterhours house. Mixes, tour dates and bookings.">
+<title>DJ Moo (UK) — UKG · Disco · House · Bass</title>
+<meta name="description" content="DJ Moo (UK) — Manchester open-format selector. UK garage, disco, house and all things bass. Mixes, dates and bookings.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A7%3C/text%3E%3C/svg%3E">
 </head>
 <body>
 <style>
   :root{
-    --ground:#0B0713;
-    --ground-2:#150C22;
-    --panel:#1B1030;
-    --line:rgba(244,238,255,.10);
-    --text:#F4EEFF;
-    --muted:#9A8FB5;
-    --magenta:#FF2E9A;
-    --cyan:#21E6FF;
-    --amber:#FFB627;
+    --ground:#140611;
+    --ground-2:#1E0A1A;
+    --panel:#26102A;
+    --line:rgba(255,240,235,.11);
+    --text:#FFF3EC;
+    --muted:#C29BB1;
+    --orange:#FF5A2C;
+    --pink:#FF3E88;
+    --lime:#CBFF3E;
     --maxw:1180px;
     --mono:ui-monospace,"SF Mono","Roboto Mono","Cascadia Mono",Menlo,Consolas,monospace;
     --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",system-ui,sans-serif;
@@ -42,10 +42,10 @@
     font-size:12px;
     letter-spacing:.28em;
     text-transform:uppercase;
-    color:var(--muted);
+    color:var(--lime);
   }
   .grad-text{
-    background:linear-gradient(100deg,var(--magenta),var(--cyan));
+    background:linear-gradient(100deg,var(--lime),var(--orange));
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
 
@@ -53,16 +53,16 @@
   header{
     position:sticky;top:0;z-index:60;
     backdrop-filter:blur(14px);
-    background:linear-gradient(180deg,rgba(11,7,19,.92),rgba(11,7,19,.55));
+    background:linear-gradient(180deg,rgba(20,6,17,.94),rgba(20,6,17,.55));
     border-bottom:1px solid var(--line);
   }
   .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
   .brand{
-    font-weight:800;letter-spacing:.14em;font-size:19px;text-transform:uppercase;
-    display:flex;align-items:center;gap:10px;
+    font-weight:800;letter-spacing:.16em;font-size:19px;text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;font-style:italic;
   }
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--magenta);
-    box-shadow:0 0 14px var(--magenta);animation:pulse 1.6s ease-in-out infinite}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--lime);
+    box-shadow:0 0 14px var(--lime);animation:pulse 1.6s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
   .nav-links{display:flex;gap:30px;align-items:center}
   .nav-links a{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--muted);
@@ -72,59 +72,70 @@
     display:inline-flex;align-items:center;gap:9px;
     font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;
     padding:12px 22px;border-radius:100px;border:1px solid transparent;cursor:pointer;
-    transition:transform .2s,box-shadow .2s,background .2s;
+    transition:transform .2s,box-shadow .2s,background .2s,color .2s;
   }
-  .btn-amber{background:var(--amber);color:#2A1600;font-weight:700}
-  .btn-amber:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,182,39,.35)}
-  .btn-ghost{border-color:var(--line);color:var(--text);background:rgba(244,238,255,.03)}
-  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+  .btn-cta{background:var(--orange);color:#210600;font-weight:700}
+  .btn-cta:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,90,44,.4)}
+  .btn-ghost{border-color:var(--line);color:var(--text);background:rgba(255,243,236,.03)}
+  .btn-ghost:hover{border-color:var(--lime);color:var(--lime)}
   .nav .btn{padding:10px 18px}
   @media(max-width:820px){.nav-links a:not(.btn){display:none}}
 
   /* ---------- Hero ---------- */
   .hero{position:relative;min-height:92vh;display:flex;align-items:center;overflow:hidden}
-  #wave{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.9}
+  #wave{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.92}
   .hero-glow{position:absolute;inset:0;z-index:1;pointer-events:none;
     background:
-      radial-gradient(60% 50% at 15% 20%,rgba(255,46,154,.22),transparent 60%),
-      radial-gradient(55% 55% at 85% 80%,rgba(33,230,255,.20),transparent 60%),
-      linear-gradient(180deg,rgba(11,7,19,.15),rgba(11,7,19,.85) 88%);}
+      radial-gradient(60% 50% at 12% 18%,rgba(255,62,136,.24),transparent 60%),
+      radial-gradient(55% 55% at 88% 82%,rgba(255,90,44,.22),transparent 60%),
+      linear-gradient(180deg,rgba(20,6,17,.12),rgba(20,6,17,.86) 88%);}
   .hero-inner{position:relative;z-index:2;width:100%;padding-top:40px;padding-bottom:40px}
   .hero .status{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;
     border:1px solid var(--line);border-radius:100px;padding:7px 14px 7px 12px;
-    background:rgba(27,16,48,.55);font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+    background:rgba(38,16,42,.6);font-family:var(--mono);font-size:12px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--muted)}
-  .status .live{width:8px;height:8px;border-radius:50%;background:var(--cyan);
-    box-shadow:0 0 12px var(--cyan);animation:pulse 1.4s infinite}
+  .status .live{width:8px;height:8px;border-radius:50%;background:var(--lime);
+    box-shadow:0 0 12px var(--lime);animation:pulse 1.4s infinite}
   h1.name{
-    font-weight:800;line-height:.86;letter-spacing:-.02em;text-transform:uppercase;
-    font-size:clamp(72px,17vw,220px);text-wrap:balance;
-    filter:drop-shadow(0 20px 60px rgba(255,46,154,.18));
+    font-weight:800;line-height:.84;letter-spacing:-.02em;text-transform:uppercase;
+    font-size:clamp(84px,22vw,280px);text-wrap:balance;font-style:italic;
+    filter:drop-shadow(0 20px 60px rgba(255,62,136,.2));
   }
-  .tagline{max-width:44ch;margin-top:22px;font-size:clamp(16px,2vw,20px);color:var(--muted)}
+  h1.name small{display:block;font-style:normal;font-size:clamp(13px,2.4vw,20px);
+    letter-spacing:.5em;color:var(--muted);-webkit-text-fill-color:var(--muted);
+    margin-top:18px;font-weight:600;text-indent:.5em}
+  .tagline{max-width:46ch;margin-top:26px;font-size:clamp(16px,2vw,20px);color:var(--muted)}
   .tagline b{color:var(--text);font-weight:600}
   .hero-cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
-  .hero-meta{display:flex;gap:34px;margin-top:44px;flex-wrap:wrap}
+  .hero-meta{display:flex;gap:34px;margin-top:46px;flex-wrap:wrap}
   .hero-meta .m .k{font-family:var(--mono);font-size:12px;letter-spacing:.18em;
     text-transform:uppercase;color:var(--muted)}
-  .hero-meta .m .v{font-size:26px;font-weight:800;margin-top:4px}
+  .hero-meta .m .v{font-size:24px;font-weight:800;margin-top:4px}
+  .hero-badge{position:absolute;top:14%;right:6%;z-index:2;width:118px;height:118px;
+    display:grid;place-items:center;transform:rotate(-14deg);animation:spin 14s linear infinite}
+  .hero-badge svg{width:100%;height:100%}
+  .hero-badge .mcr{position:absolute;font-family:var(--mono);font-size:12px;font-weight:700;
+    letter-spacing:.06em;color:var(--lime);text-transform:uppercase;line-height:1.15;text-align:center}
+  @media(max-width:900px){.hero-badge{display:none}}
 
   /* ---------- Marquee ---------- */
   .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    background:var(--ground-2);overflow:hidden;padding:18px 0}
+    background:var(--ground-2);overflow:hidden;padding:16px 0}
   .marquee .track{display:flex;gap:44px;white-space:nowrap;width:max-content;
-    animation:scroll 26s linear infinite}
-  .marquee span{font-weight:800;text-transform:uppercase;letter-spacing:.02em;
+    animation:scroll 24s linear infinite}
+  .marquee.rev .track{animation-direction:reverse;animation-duration:30s}
+  .marquee span{font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-style:italic;
     font-size:22px;color:var(--muted);display:inline-flex;align-items:center;gap:44px}
-  .marquee span::after{content:"◆";color:var(--magenta);font-size:12px}
+  .marquee span::after{content:"●";color:var(--orange);font-size:11px;font-style:normal}
+  .marquee.rev span::after{color:var(--lime)}
   @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
   /* ---------- Section shell ---------- */
   section{padding:110px 0}
   .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
     margin-bottom:52px;flex-wrap:wrap}
-  .sec-head h2{font-size:clamp(34px,5vw,60px);font-weight:800;letter-spacing:-.02em;
-    text-transform:uppercase;line-height:.95}
+  .sec-head h2{font-size:clamp(34px,5vw,62px);font-weight:800;letter-spacing:-.02em;
+    text-transform:uppercase;line-height:.95;font-style:italic}
   .sec-head p{color:var(--muted);max-width:38ch}
 
   /* ---------- Mixes / tracklist ---------- */
@@ -133,24 +144,24 @@
   .row{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:18px;
     padding:20px 22px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .2s}
   .row:last-child{border-bottom:none}
-  .row:hover{background:rgba(255,46,154,.06)}
-  .row.active{background:linear-gradient(90deg,rgba(255,46,154,.12),rgba(33,230,255,.06))}
+  .row:hover{background:rgba(255,90,44,.07)}
+  .row.active{background:linear-gradient(90deg,rgba(203,255,62,.12),rgba(255,62,136,.06))}
   .play{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
-    display:grid;place-items:center;background:rgba(244,238,255,.04);color:var(--text);
+    display:grid;place-items:center;background:rgba(255,243,236,.04);color:var(--text);
     transition:.2s;flex:none}
-  .row:hover .play,.row.active .play{border-color:var(--magenta);color:var(--magenta)}
+  .row:hover .play,.row.active .play{border-color:var(--lime);color:var(--lime)}
   .t-main .t-title{font-size:19px;font-weight:700;letter-spacing:-.01em}
   .t-main .t-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:5px;
     display:flex;gap:14px;flex-wrap:wrap}
-  .t-sub .tag{color:var(--cyan)}
-  .t-sub .bpm{color:var(--amber)}
+  .t-sub .tag{color:var(--lime)}
+  .t-sub .bpm{color:var(--orange)}
   .t-right{display:flex;align-items:center;gap:22px}
   .t-dur{font-family:var(--mono);font-size:13px;color:var(--muted)}
   /* equalizer */
   .eq{display:flex;align-items:flex-end;gap:3px;height:22px;width:26px;opacity:.35}
   .row.active .eq{opacity:1}
-  .eq i{width:4px;background:linear-gradient(var(--cyan),var(--magenta));height:30%;border-radius:2px}
-  .row.active .eq i{animation:bounce .9s ease-in-out infinite}
+  .eq i{width:4px;background:linear-gradient(var(--lime),var(--orange));height:30%;border-radius:2px}
+  .row.active .eq i{animation:bounce .85s ease-in-out infinite}
   .eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}
   .eq i:nth-child(4){animation-delay:.45s}
   @keyframes bounce{0%,100%{height:25%}50%{height:100%}}
@@ -160,7 +171,7 @@
   .gigs{display:flex;flex-direction:column;gap:2px}
   .gig{display:grid;grid-template-columns:130px 1fr auto;gap:22px;align-items:center;
     padding:26px 4px;border-bottom:1px solid var(--line);transition:padding-left .25s,background .25s}
-  .gig:hover{padding-left:16px;background:linear-gradient(90deg,rgba(33,230,255,.06),transparent)}
+  .gig:hover{padding-left:16px;background:linear-gradient(90deg,rgba(203,255,62,.07),transparent)}
   .gig .date{font-family:var(--mono);font-size:14px}
   .gig .date .d{font-size:26px;font-weight:800;color:var(--text)}
   .gig .date .mo{color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-size:12px}
@@ -169,7 +180,7 @@
     letter-spacing:.04em;text-transform:uppercase}
   .gig .status{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
     padding:8px 16px;border-radius:100px;border:1px solid var(--line);white-space:nowrap}
-  .gig .status.tix{color:var(--amber);border-color:rgba(255,182,39,.4)}
+  .gig .status.tix{color:var(--orange);border-color:rgba(255,90,44,.4)}
   .gig .status.soldout{color:var(--muted)}
   @media(max-width:640px){.gig{grid-template-columns:74px 1fr;grid-template-rows:auto auto}
     .gig .status{grid-column:2}}
@@ -179,26 +190,26 @@
   .about-visual{position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;
     border:1px solid var(--line);
     background:
-      radial-gradient(120% 90% at 20% 0%,rgba(255,46,154,.55),transparent 55%),
-      radial-gradient(120% 90% at 100% 100%,rgba(33,230,255,.5),transparent 55%),
-      linear-gradient(160deg,#241238,#0B0713);}
+      radial-gradient(120% 90% at 20% 0%,rgba(255,62,136,.6),transparent 55%),
+      radial-gradient(120% 90% at 100% 100%,rgba(255,90,44,.55),transparent 55%),
+      linear-gradient(160deg,#3a1030,#140611);}
   .about-visual .ring{position:absolute;inset:0;display:grid;place-items:center}
   .about-visual .disc{width:56%;aspect-ratio:1;border-radius:50%;
-    background:conic-gradient(from 0deg,#2a1740,#0B0713,#2a1740,#0B0713,#2a1740);
-    border:1px solid rgba(244,238,255,.14);position:relative;
-    box-shadow:0 30px 80px rgba(0,0,0,.5);animation:spin 8s linear infinite}
+    background:
+      repeating-conic-gradient(from 0deg,rgba(255,243,236,.16) 0deg 6deg,transparent 6deg 12deg),
+      conic-gradient(from 0deg,#ff5a2c,#ff3e88,#cbff3e,#ff5a2c);
+    border:1px solid rgba(255,243,236,.2);position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,.5),inset 0 0 40px rgba(0,0,0,.4);animation:spin 9s linear infinite}
   .about-visual .disc::before{content:"";position:absolute;inset:0;margin:auto;
-    width:22%;aspect-ratio:1;border-radius:50%;background:var(--magenta);
-    box-shadow:0 0 30px var(--magenta)}
-  .about-visual .disc::after{content:"";position:absolute;inset:0;margin:auto;
-    width:6%;aspect-ratio:1;border-radius:50%;background:var(--ground)}
+    width:20%;aspect-ratio:1;border-radius:50%;background:var(--ground);
+    border:1px solid rgba(255,243,236,.25)}
   @keyframes spin{to{transform:rotate(360deg)}}
   .about-body h3{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em;
-    line-height:1.05;text-transform:uppercase;margin-bottom:22px}
+    line-height:1.05;text-transform:uppercase;margin-bottom:22px;font-style:italic}
   .about-body p{color:var(--muted);margin-bottom:18px;max-width:52ch}
   .about-body p b{color:var(--text);font-weight:600}
   .stats{display:flex;gap:40px;margin-top:30px;flex-wrap:wrap}
-  .stats .s .n{font-size:34px;font-weight:800}
+  .stats .s .n{font-size:32px;font-weight:800}
   .stats .s .l{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--muted);margin-top:2px}
   @media(max-width:820px){.about{grid-template-columns:1fr;gap:40px}}
@@ -208,31 +219,31 @@
   .chip{font-family:var(--mono);font-size:14px;letter-spacing:.04em;text-transform:uppercase;
     padding:14px 22px;border-radius:100px;border:1px solid var(--line);color:var(--muted);
     transition:.2s;cursor:default}
-  .chip:hover{color:var(--text);border-color:var(--cyan);transform:translateY(-2px)}
+  .chip:hover{color:var(--text);border-color:var(--lime);transform:translateY(-2px)}
 
   /* ---------- Booking ---------- */
-  .book{background:linear-gradient(160deg,#1B1030,#0B0713);border:1px solid var(--line);
+  .book{background:linear-gradient(160deg,#26102A,#140611);border:1px solid var(--line);
     border-radius:24px;padding:clamp(30px,5vw,64px);position:relative;overflow:hidden}
   .book::before{content:"";position:absolute;top:-40%;right:-10%;width:60%;height:120%;
-    background:radial-gradient(circle,rgba(255,46,154,.25),transparent 65%);pointer-events:none}
+    background:radial-gradient(circle,rgba(255,90,44,.28),transparent 65%);pointer-events:none}
   .book-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;position:relative;z-index:1}
   .book h2{font-size:clamp(32px,4.4vw,54px);font-weight:800;text-transform:uppercase;
-    letter-spacing:-.02em;line-height:.95;margin-bottom:18px}
+    letter-spacing:-.02em;line-height:.95;margin-bottom:18px;font-style:italic}
   .book p{color:var(--muted);max-width:40ch;margin-bottom:26px}
   .contact-line{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:15px;
     margin-bottom:12px}
-  .contact-line .ic{color:var(--cyan)}
+  .contact-line .ic{color:var(--lime)}
   form{display:flex;flex-direction:column;gap:14px}
   .field{display:flex;flex-direction:column;gap:7px}
   .field label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
     color:var(--muted)}
   .field input,.field select,.field textarea{
-    background:rgba(11,7,19,.6);border:1px solid var(--line);border-radius:12px;
+    background:rgba(20,6,17,.65);border:1px solid var(--line);border-radius:12px;
     padding:13px 15px;color:var(--text);font-family:var(--sans);font-size:15px;transition:border .2s}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--magenta)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--orange)}
   .field textarea{resize:vertical;min-height:80px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  form .btn-amber{margin-top:6px;justify-content:center}
+  form .btn-cta{margin-top:6px;justify-content:center}
   .form-note{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
   @media(max-width:820px){.book-grid{grid-template-columns:1fr;gap:30px}}
 
@@ -243,7 +254,7 @@
   .foot .socials a{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
     display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--muted);
     transition:.2s;letter-spacing:.02em}
-  .foot .socials a:hover{color:var(--ground);background:var(--cyan);border-color:var(--cyan)}
+  .foot .socials a:hover{color:var(--ground);background:var(--lime);border-color:var(--lime)}
   .foot .copy{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
@@ -257,12 +268,12 @@
 
 <header>
   <div class="wrap nav">
-    <div class="brand"><span class="dot"></span>KAIRO</div>
+    <div class="brand"><span class="dot"></span>MOO</div>
     <nav class="nav-links">
       <a href="#mixes">Mixes</a>
       <a href="#dates">Dates</a>
       <a href="#about">About</a>
-      <a href="#book" class="btn btn-amber">Book Kairo</a>
+      <a href="#book" class="btn btn-cta">Book Moo</a>
     </nav>
   </div>
 </header>
@@ -270,28 +281,34 @@
 <section class="hero">
   <canvas id="wave"></canvas>
   <div class="hero-glow"></div>
+  <div class="hero-badge" aria-hidden="true">
+    <svg viewBox="0 0 100 100"><defs><path id="circ" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs>
+      <text font-family="ui-monospace,monospace" font-size="8.4" letter-spacing="1.6" fill="#CBFF3E" font-weight="700">
+        <textPath href="#circ">UKG · DISCO · HOUSE · BASS · </textPath></text></svg>
+    <div class="mcr">MCR<br>UK</div>
+  </div>
   <div class="wrap hero-inner">
-    <div class="status"><span class="live"></span>Now Playing — Boiler Room, Berlin</div>
-    <h1 class="name">KA<span class="grad-text">I</span>RO</h1>
-    <p class="tagline"><b>Melodic techno &amp; afterhours house.</b> Sound that starts in the chest and doesn't let go until the lights come up.</p>
+    <div class="status"><span class="live"></span>Resident — Looney Grooves, Manchester</div>
+    <h1 class="name grad-text">MOO<small>Josh "Moo" Marshall</small></h1>
+    <p class="tagline"><b>North West selector with a flavour for UKG, disco, house &amp; all things bass.</b> Full-time since &rsquo;23 — Parklife main-stage energy, warehouse roots.</p>
     <div class="hero-cta">
-      <a href="#mixes" class="btn btn-amber">▶ Listen to the latest set</a>
+      <a href="#mixes" class="btn btn-cta">▶ Hear the latest set</a>
       <a href="#book" class="btn btn-ghost">Book for your event</a>
     </div>
     <div class="hero-meta">
-      <div class="m"><div class="k">Based in</div><div class="v">Berlin / London</div></div>
-      <div class="m"><div class="k">Shows in 2025</div><div class="v">80+</div></div>
-      <div class="m"><div class="k">Monthly listeners</div><div class="v">240K</div></div>
+      <div class="m"><div class="k">Based in</div><div class="v">Manchester, UK</div></div>
+      <div class="m"><div class="k">Played</div><div class="v">Parklife ’22 &amp; ’23</div></div>
+      <div class="m"><div class="k">Residencies</div><div class="v">2 &amp; counting</div></div>
     </div>
   </div>
 </section>
 
 <div class="marquee" aria-hidden="true">
   <div class="track">
-    <span>Fabric London</span><span>Awakenings</span><span>Printworks</span><span>Watergate</span>
-    <span>Tomorrowland</span><span>De School</span><span>Sub Club</span><span>DC-10 Ibiza</span>
-    <span>Fabric London</span><span>Awakenings</span><span>Printworks</span><span>Watergate</span>
-    <span>Tomorrowland</span><span>De School</span><span>Sub Club</span><span>DC-10 Ibiza</span>
+    <span>Parklife</span><span>Looney Grooves</span><span>Funk My Life</span><span>Beaverworks Leeds</span>
+    <span>UK Garage</span><span>Nu-Disco</span><span>All Things Bass</span><span>Manchester</span>
+    <span>Parklife</span><span>Looney Grooves</span><span>Funk My Life</span><span>Beaverworks Leeds</span>
+    <span>UK Garage</span><span>Nu-Disco</span><span>All Things Bass</span><span>Manchester</span>
   </div>
 </div>
 
@@ -302,40 +319,40 @@
         <div class="eyebrow">Selected sets</div>
         <h2>Latest mixes</h2>
       </div>
-      <p>Recorded live and studio-cut. Tap a track to feel the room — full sets stream on all platforms.</p>
+      <p>Garage-led, disco-warm, bass-heavy. Tap a track to feel the room — full sets stream on SoundCloud &amp; Mixcloud.</p>
     </div>
     <div class="tracks reveal">
-      <div class="row active" data-title="Midnight Frequencies Vol.4">
+      <div class="row active">
         <div class="play">▶</div>
         <div class="t-main">
-          <div class="t-title">Midnight Frequencies — Vol. 4</div>
-          <div class="t-sub"><span class="tag">Melodic Techno</span><span class="bpm">124 BPM</span><span>Key A min</span><span>Live @ Watergate</span></div>
+          <div class="t-title">Looney Grooves — Live at Beaverworks</div>
+          <div class="t-sub"><span class="tag">UK Garage</span><span class="bpm">133 BPM</span><span>2-Step</span><span>Live Set</span></div>
         </div>
-        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">68:14</div></div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">61:20</div></div>
       </div>
-      <div class="row" data-title="Concrete Sunrise">
+      <div class="row">
         <div class="play">▶</div>
         <div class="t-main">
-          <div class="t-title">Concrete Sunrise</div>
-          <div class="t-sub"><span class="tag">Afterhours House</span><span class="bpm">122 BPM</span><span>Key F min</span><span>Studio Mix</span></div>
+          <div class="t-title">Funk My Life — Nu-Disco Session</div>
+          <div class="t-sub"><span class="tag">Nu-Disco</span><span class="bpm">122 BPM</span><span>Key A min</span><span>Leeds</span></div>
         </div>
-        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">54:02</div></div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">58:44</div></div>
       </div>
-      <div class="row" data-title="Neon Cathedral">
+      <div class="row">
         <div class="play">▶</div>
         <div class="t-main">
-          <div class="t-title">Neon Cathedral</div>
-          <div class="t-sub"><span class="tag">Progressive</span><span class="bpm">126 BPM</span><span>Key C min</span><span>Awakenings Set</span></div>
+          <div class="t-title">All Things Bass — Warehouse Cut</div>
+          <div class="t-sub"><span class="tag">Bassline</span><span class="bpm">136 BPM</span><span>Key F min</span><span>Studio Mix</span></div>
         </div>
-        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">72:47</div></div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">47:02</div></div>
       </div>
-      <div class="row" data-title="Low Orbit">
+      <div class="row">
         <div class="play">▶</div>
         <div class="t-main">
-          <div class="t-title">Low Orbit</div>
-          <div class="t-sub"><span class="tag">Deep / Dub</span><span class="bpm">120 BPM</span><span>Key G min</span><span>Sunset Session</span></div>
+          <div class="t-title">Parklife Warm-Up — Sunset House</div>
+          <div class="t-sub"><span class="tag">House</span><span class="bpm">125 BPM</span><span>Key C min</span><span>Festival Set</span></div>
         </div>
-        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">61:30</div></div>
+        <div class="t-right"><div class="eq"><i></i><i></i><i></i><i></i></div><div class="t-dur">72:15</div></div>
       </div>
     </div>
   </div>
@@ -345,35 +362,35 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div>
-        <div class="eyebrow">On tour</div>
+        <div class="eyebrow">On the road</div>
         <h2>Upcoming dates</h2>
       </div>
-      <p>Catch a live set this season. New shows drop first to the mailing list.</p>
+      <p>Catch Moo across the North &amp; beyond. New shows drop first on Instagram.</p>
     </div>
     <div class="gigs reveal">
       <div class="gig">
-        <div class="date"><span class="d">24</span> <span class="mo">Aug</span></div>
-        <div><div class="venue">Printworks</div><div class="city">London · UK</div></div>
+        <div class="date"><span class="d">15</span> <span class="mo">Aug</span></div>
+        <div><div class="venue">Looney Grooves · Summer Special</div><div class="city">Manchester · UK</div></div>
         <div class="status tix">Tickets</div>
       </div>
       <div class="gig">
-        <div class="date"><span class="d">06</span> <span class="mo">Sep</span></div>
-        <div><div class="venue">Watergate</div><div class="city">Berlin · DE</div></div>
+        <div class="date"><span class="d">30</span> <span class="mo">Aug</span></div>
+        <div><div class="venue">Funk My Life</div><div class="city">Leeds · UK</div></div>
         <div class="status soldout">Sold out</div>
       </div>
       <div class="gig">
-        <div class="date"><span class="d">19</span> <span class="mo">Sep</span></div>
-        <div><div class="venue">DC-10 · Terrace</div><div class="city">Ibiza · ES</div></div>
+        <div class="date"><span class="d">13</span> <span class="mo">Sep</span></div>
+        <div><div class="venue">Beaverworks</div><div class="city">Leeds · UK</div></div>
         <div class="status tix">Tickets</div>
       </div>
       <div class="gig">
-        <div class="date"><span class="d">11</span> <span class="mo">Oct</span></div>
-        <div><div class="venue">Sub Club</div><div class="city">Glasgow · UK</div></div>
+        <div class="date"><span class="d">04</span> <span class="mo">Oct</span></div>
+        <div><div class="venue">Hidden</div><div class="city">Manchester · UK</div></div>
         <div class="status tix">Tickets</div>
       </div>
       <div class="gig">
         <div class="date"><span class="d">31</span> <span class="mo">Oct</span></div>
-        <div><div class="venue">Halloween Warehouse</div><div class="city">Amsterdam · NL</div></div>
+        <div><div class="venue">Looney Grooves · Halloween</div><div class="city">Manchester · UK</div></div>
         <div class="status tix">Tickets</div>
       </div>
     </div>
@@ -386,18 +403,18 @@
       <div class="ring"><div class="disc"></div></div>
     </div>
     <div class="about-body reveal">
-      <div class="eyebrow" style="margin-bottom:16px">The artist</div>
-      <h3>Ten years reading the floor</h3>
-      <p><b>Kairo</b> has spent a decade turning warehouses, terraces and cathedrals of sound into single, breathing organisms. What started as bedroom edits in East London is now a passport full of stamps and a signature blend of melodic techno and afterhours house.</p>
-      <p>Every set is built live, in the moment — no two nights the same. The through-line is feeling: hypnotic low-end, arms-up melodies, and that one drop the whole room remembers on the walk home.</p>
+      <div class="eyebrow" style="margin-bottom:16px">The selector</div>
+      <h3>From bedroom edits to the main stage</h3>
+      <p><b>Josh "Moo" Marshall</b> is a Manchester-based open-format DJ and UKG producer — a North West selector with a flavour for UK garage, disco, house and all things bass. What began as edits at home is now a full-time craft, built on reading a room and running it.</p>
+      <p>Co-founder and resident of <b>Looney Grooves</b>, the UKG &amp; bass-heavy night out of Manchester, and a resident selector for <b>Funk My Life</b> bringing nu-disco to Leeds. Festival stages include <b>Parklife 2022 &amp; 2023</b> — proof the sound travels from basement to big top.</p>
       <div class="stats">
-        <div class="s"><div class="n grad-text">10 yrs</div><div class="l">Behind the decks</div></div>
-        <div class="s"><div class="n grad-text">32</div><div class="l">Countries played</div></div>
-        <div class="s"><div class="n grad-text">4M+</div><div class="l">Streams</div></div>
+        <div class="s"><div class="n grad-text">2×</div><div class="l">Parklife stages</div></div>
+        <div class="s"><div class="n grad-text">2</div><div class="l">Residencies</div></div>
+        <div class="s"><div class="n grad-text">’23</div><div class="l">Full-time since</div></div>
       </div>
       <div class="chips" style="margin-top:34px">
-        <span class="chip">Melodic Techno</span><span class="chip">Afterhours House</span>
-        <span class="chip">Progressive</span><span class="chip">Deep / Dub</span><span class="chip">Open-to-close</span>
+        <span class="chip">UK Garage</span><span class="chip">2-Step</span>
+        <span class="chip">Bassline</span><span class="chip">Nu-Disco</span><span class="chip">House</span><span class="chip">Open Format</span>
       </div>
     </div>
   </div>
@@ -409,11 +426,11 @@
       <div class="book-grid">
         <div>
           <div class="eyebrow" style="margin-bottom:16px">Bookings &amp; press</div>
-          <h2>Bring Kairo to your floor</h2>
-          <p>Clubs, festivals, private events and brand nights. Tell us the date and the vibe — we'll handle the rest.</p>
-          <div class="contact-line"><span class="ic">✉</span> bookings@kairo.dj</div>
-          <div class="contact-line"><span class="ic">☎</span> +44 20 7946 0000</div>
-          <div class="contact-line"><span class="ic">◎</span> Worldwide · Repped by Nightform Agency</div>
+          <h2>Get Moo on your line-up</h2>
+          <p>Clubs, festivals, parties and private events across the North West and beyond. Tell us the date and the vibe — Moo brings the bass.</p>
+          <div class="contact-line"><span class="ic">✉</span> bookings@djmoo.uk</div>
+          <div class="contact-line"><span class="ic">◎</span> Manchester · available UK-wide</div>
+          <div class="contact-line"><span class="ic">☞</span> DMs open — @djmoouk</div>
         </div>
         <form id="bookform">
           <div class="row2">
@@ -423,11 +440,11 @@
           <div class="row2">
             <div class="field"><label>Event date</label><input type="date"></div>
             <div class="field"><label>Type</label>
-              <select><option>Club night</option><option>Festival</option><option>Private event</option><option>Brand / corporate</option></select>
+              <select><option>Club night</option><option>Festival</option><option>Private party</option><option>Wedding</option><option>Brand / corporate</option></select>
             </div>
           </div>
           <div class="field"><label>Tell us about the night</label><textarea placeholder="Venue, capacity, set length, budget range…"></textarea></div>
-          <button type="submit" class="btn btn-amber">Send booking enquiry</button>
+          <button type="submit" class="btn btn-cta">Send booking enquiry</button>
           <div class="form-note" id="formnote">Typical reply within 48 hours.</div>
         </form>
       </div>
@@ -437,15 +454,15 @@
 
 <footer>
   <div class="wrap foot">
-    <div class="brand"><span class="dot"></span>KAIRO</div>
+    <div class="brand"><span class="dot"></span>MOO</div>
     <div class="socials">
-      <a href="#" aria-label="Instagram">IG</a>
+      <a href="https://www.instagram.com/djmoouk" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+      <a href="https://ra.co/dj/djmoouk" target="_blank" rel="noopener" aria-label="Resident Advisor">RA</a>
       <a href="#" aria-label="SoundCloud">SC</a>
+      <a href="#" aria-label="Mixcloud">MX</a>
       <a href="#" aria-label="Spotify">SP</a>
-      <a href="#" aria-label="YouTube">YT</a>
-      <a href="#" aria-label="Beatport">BP</a>
     </div>
-    <div class="copy">© 2025 Kairo · Mockup by your studio</div>
+    <div class="copy">© 2025 DJ Moo (UK) · Mockup — not yet live</div>
   </div>
 </footer>
 
@@ -475,11 +492,10 @@
         var x = i*bw;
         var n = Math.sin(i*0.35 + t) * Math.cos(i*0.12 - t*0.7);
         var amp = (0.28 + 0.72*Math.abs(n)) * (h*0.30);
-        // seed a little variation so it feels like real audio
         amp *= 0.6 + 0.4*Math.abs(Math.sin(i*1.7 + t*1.3));
         var g = ctx.createLinearGradient(0, mid-amp, 0, mid+amp);
-        g.addColorStop(0,'rgba(33,230,255,0.85)');
-        g.addColorStop(1,'rgba(255,46,154,0.85)');
+        g.addColorStop(0,'rgba(255,62,136,0.9)');
+        g.addColorStop(1,'rgba(255,90,44,0.9)');
         ctx.fillStyle = g;
         var bwi = Math.max(2, bw*0.42);
         roundRect(x + (bw-bwi)/2, mid-amp, bwi, amp*2, bwi/2);
@@ -500,7 +516,6 @@
 
   /* ---- Tracklist: activate row ---- */
   var rows = document.querySelectorAll('.row');
-  var status = document.querySelector('.hero .status');
   rows.forEach(function(r){
     r.addEventListener('click', function(){
       rows.forEach(function(x){x.classList.remove('active');x.querySelector('.play').textContent='▶';});
@@ -516,7 +531,7 @@
       e.preventDefault();
       var note = document.getElementById('formnote');
       note.textContent = '✓ Enquiry sent — this is a mockup, wire it to email or a form service to go live.';
-      note.style.color = '#21E6FF';
+      note.style.color = '#CBFF3E';
       form.reset();
     });
   }
