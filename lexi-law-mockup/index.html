@@ -97,21 +97,45 @@
   .trust .ti{display:flex;flex-direction:column}
   .trust .ti b{font-family:var(--serif);font-size:20px}
   .trust .ti span{font-size:12.5px;color:var(--muted);letter-spacing:.04em}
-  /* hero card */
-  .hero-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;
-    box-shadow:var(--shadow);padding:30px;position:relative;overflow:hidden}
-  .hero-card::before{content:"";position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(120% 80% at 100% 0%,var(--brand-soft),transparent 60%)}
-  .hero-card h3{font-family:var(--serif);font-size:20px;margin-bottom:6px;position:relative}
-  .hero-card p.sub{color:var(--muted);font-size:14px;margin-bottom:18px;position:relative}
-  .hero-card .pick{position:relative;display:flex;flex-direction:column;gap:2px}
-  .hero-card .pick a{display:flex;align-items:center;justify-content:space-between;
-    padding:15px 16px;border-radius:10px;border:1px solid var(--line);margin-bottom:8px;
-    transition:.18s;background:var(--bg)}
-  .hero-card .pick a:hover{border-color:var(--brand);transform:translateX(3px)}
-  .hero-card .pick .name{font-weight:600}
-  .hero-card .pick .arw{color:var(--accent);font-family:var(--serif)}
-  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+  /* hero photo */
+  .hero-photo{position:relative;margin:0}
+  .hero-photo img{width:100%;border-radius:16px;box-shadow:var(--shadow);
+    aspect-ratio:5/6;object-fit:cover;object-position:50% 20%;
+    border:1px solid var(--line)}
+  .cred-card{position:absolute;left:-18px;bottom:26px;background:var(--surface);
+    border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;
+    box-shadow:var(--shadow);padding:14px 20px;display:flex;flex-direction:column;max-width:80%}
+  .cred-card .cc-k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:700}
+  .cred-card .cc-v{font-family:var(--serif);font-size:16px;color:var(--ink);margin-top:3px}
+  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:40px}
+    .hero-photo{max-width:440px}.cred-card{left:0}}
+
+  /* Principal / meet the solicitor */
+  .principal{background:var(--surface)}
+  .prin-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:56px;align-items:center}
+  .prin-photo{position:relative;margin:0}
+  .prin-photo img{width:100%;border-radius:16px;box-shadow:var(--shadow);
+    aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line)}
+  .prin-body h2{font-family:var(--serif);font-weight:700;font-size:clamp(28px,4vw,42px);
+    line-height:1.1;margin:14px 0 6px}
+  .prin-role{color:var(--accent);font-weight:700;font-size:14px;letter-spacing:.06em;
+    text-transform:uppercase;margin-bottom:20px}
+  .prin-body p{color:var(--muted);margin-bottom:16px;max-width:56ch}
+  .prin-body p b{color:var(--ink)}
+  .prin-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+  .gallery figure{margin:0;position:relative;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);background:var(--bg)}
+  .gallery img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;transition:transform .4s}
+  .gallery figure:hover img{transform:scale(1.04)}
+  .gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:24px 14px 12px;
+    font-size:12.5px;color:#fff;font-weight:600;letter-spacing:.02em;
+    background:linear-gradient(transparent,rgba(8,20,16,.82))}
+  @media(max-width:860px){.prin-grid{grid-template-columns:1fr;gap:34px}
+    .prin-photo{max-width:420px}}
+  @media(max-width:600px){.gallery{grid-template-columns:1fr;gap:12px}
+    .gallery img{aspect-ratio:16/10}}
 
   /* Section shell */
   section{padding:clamp(56px,8vw,96px) 0}
@@ -238,6 +262,7 @@
     <nav class="nav-links">
       <a href="#services">Services</a>
       <a href="#approach">Our approach</a>
+      <a href="#principal">Our solicitor</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -267,16 +292,13 @@
           <div class="ti"><b>Stockport</b><span>Serving Greater Manchester</span></div>
         </div>
       </div>
-      <aside class="hero-card">
-        <h3>How can we help?</h3>
-        <p class="sub">Pick an area to get started — or call us for a chat.</p>
-        <div class="pick">
-          <a href="#services"><span class="name">Family &amp; Matrimonial</span><span class="arw">→</span></a>
-          <a href="#services"><span class="name">Immigration</span><span class="arw">→</span></a>
-          <a href="#services"><span class="name">Landlord &amp; Tenant</span><span class="arw">→</span></a>
-          <a href="#services"><span class="name">Personal Injury</span><span class="arw">→</span></a>
-        </div>
-      </aside>
+      <figure class="hero-photo">
+        <img src="assets/hero.jpg" alt="Principal solicitor of Lexi Law outside The Law Society, London" loading="eager">
+        <figcaption class="cred-card">
+          <span class="cc-k">Principal Solicitor</span>
+          <span class="cc-v">Admitted at The Law&nbsp;Society, London</span>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -380,6 +402,33 @@
         <div class="s"><div class="n">SRA</div><div class="l">Authorised &amp; regulated</div></div>
         <div class="s"><div class="n">2023</div><div class="l">Independently founded</div></div>
         <div class="s"><div class="n">1:1</div><div class="l">Personal case handling</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="principal" id="principal">
+    <div class="wrap prin-grid">
+      <figure class="prin-photo reveal">
+        <img src="assets/desk.jpg" alt="Principal solicitor at his desk at Lexi Law, Stockport">
+      </figure>
+      <div class="prin-body reveal">
+        <div class="eyebrow">Meet your solicitor</div>
+        <h2>[Principal Solicitor's name]</h2>
+        <div class="prin-role">Principal Solicitor &amp; Founder</div>
+        <p>A qualified solicitor admitted at <b>The Law Society in London</b>, [name] founded Lexi Law to bring approachable, straight-talking legal advice to Stockport and Greater Manchester.</p>
+        <p>With hands-on experience across <b>family, immigration, landlord &amp; tenant and personal injury</b> matters — and regular advocacy in courts including Worthing Law Courts — he handles every case personally, so you always deal with the person actually running your matter.</p>
+        <p>He believes in honest advice, clear costs, and treating clients like people, not case numbers.</p>
+        <div class="prin-actions">
+          <a href="#contact" class="btn btn-primary">Arrange a consultation</a>
+          <a href="tel:01616692400" class="btn btn-ghost">☎ 0161 669 2400</a>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="gallery reveal">
+        <figure><img src="assets/admission.jpg" alt="Admission ceremony at The Law Society"><figcaption>Admitted as a solicitor · The Law Society</figcaption></figure>
+        <figure><img src="assets/hall.jpg" alt="At The Law Society, London"><figcaption>The Law Society · London</figcaption></figure>
+        <figure><img src="assets/court.jpg" alt="Representing a client at Worthing Law Courts"><figcaption>Advocacy · Worthing Law Courts</figcaption></figure>
       </div>
     </div>
   </section>
