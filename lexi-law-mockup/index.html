@@ -84,32 +84,66 @@
     width:40px;height:40px;cursor:pointer;color:var(--ink);font-size:16px;display:grid;place-items:center}
   @media(max-width:900px){.nav-links,.nav-phone{display:none}}
 
-  /* Hero */
-  .hero{padding:clamp(60px,9vw,110px) 0 clamp(50px,7vw,90px)}
-  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
-  .hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(38px,6vw,68px);
-    line-height:1.04;letter-spacing:-.015em;text-wrap:balance;margin:20px 0 22px}
-  .hero h1 em{font-style:italic;color:var(--brand)}
-  .hero .lead{max-width:50ch}
-  .hero-actions{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap}
-  .trust{display:flex;gap:26px;margin-top:38px;flex-wrap:wrap;padding-top:26px;
-    border-top:1px solid var(--line)}
-  .trust .ti{display:flex;flex-direction:column}
-  .trust .ti b{font-family:var(--serif);font-size:20px}
-  .trust .ti span{font-size:12.5px;color:var(--muted);letter-spacing:.04em}
-  /* hero photo */
-  .hero-photo{position:relative;margin:0}
-  .hero-photo img{width:100%;border-radius:16px;box-shadow:var(--shadow);
-    aspect-ratio:5/6;object-fit:cover;object-position:50% 20%;
-    border:1px solid var(--line)}
-  .cred-card{position:absolute;left:-18px;bottom:26px;background:var(--surface);
-    border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;
-    box-shadow:var(--shadow);padding:14px 20px;display:flex;flex-direction:column;max-width:80%}
-  .cred-card .cc-k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--accent);font-weight:700}
-  .cred-card .cc-v{font-family:var(--serif);font-size:16px;color:var(--ink);margin-top:3px}
-  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:40px}
-    .hero-photo{max-width:440px}.cred-card{left:0}}
+  /* Hero slider */
+  .hero-slider{position:relative;height:clamp(560px,86vh,780px);overflow:hidden;
+    background:var(--brand-deep);isolation:isolate}
+  .slides{position:absolute;inset:0}
+  .slide{position:absolute;inset:0;opacity:0;visibility:hidden;
+    transition:opacity .9s ease,visibility .9s ease}
+  .slide.active{opacity:1;visibility:visible}
+  .slide .bg{position:absolute;inset:0;background-size:cover;background-position:50% 24%;
+    transform:scale(1.05);transition:transform 8s ease-out}
+  .slide.active .bg{transform:scale(1.16)}
+  .slide .scrim{position:absolute;inset:0;
+    background:linear-gradient(90deg,rgba(8,24,18,.94) 0%,rgba(8,24,18,.78) 38%,rgba(8,24,18,.32) 78%,rgba(8,24,18,.15) 100%),
+      linear-gradient(0deg,rgba(8,24,18,.7),transparent 55%)}
+  .slide .content{position:relative;height:100%;display:flex;align-items:center;z-index:2}
+  .slide .inner{max-width:660px;color:#F2F7F3}
+  .slide .s-eyebrow{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin-bottom:18px}
+  .slide h1{font-family:var(--serif);font-weight:700;font-size:clamp(36px,6vw,66px);
+    line-height:1.05;letter-spacing:-.015em;text-wrap:balance;color:#FCFEFC;margin-bottom:20px}
+  .slide h1 em{font-style:italic;color:#EAD6AE}
+  .slide p{font-size:clamp(16px,1.6vw,19px);color:rgba(242,247,243,.86);max-width:52ch;
+    margin-bottom:30px}
+  .slide-actions{display:flex;gap:14px;flex-wrap:wrap}
+  .slide .btn-light{background:#F6F3EC;color:var(--brand-deep)}
+  .slide .btn-light:hover{background:#fff;transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.35)}
+  .slide .btn-outline{border-color:rgba(246,243,236,.55);color:#F6F3EC;background:transparent}
+  .slide .btn-outline:hover{border-color:#fff;background:rgba(246,243,236,.1)}
+  /* animate content in */
+  .slide.active .inner>*{animation:slideUp .7s ease both}
+  .slide.active .s-eyebrow{animation-delay:.15s}
+  .slide.active h1{animation-delay:.28s}
+  .slide.active p{animation-delay:.42s}
+  .slide.active .slide-actions{animation-delay:.55s}
+  @keyframes slideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  /* arrows */
+  .s-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:52px;height:52px;
+    border-radius:50%;border:1px solid rgba(246,243,236,.4);background:rgba(8,24,18,.35);
+    color:#F6F3EC;font-size:22px;cursor:pointer;display:grid;place-items:center;
+    backdrop-filter:blur(6px);transition:.2s}
+  .s-arrow:hover{background:var(--accent);border-color:var(--accent);color:#221200}
+  .s-arrow.prev{left:22px}.s-arrow.next{right:22px}
+  /* dots / tabs */
+  .s-dots{position:absolute;left:0;right:0;bottom:26px;z-index:5;display:flex;gap:10px;
+    justify-content:center;flex-wrap:wrap;padding:0 20px}
+  .s-dots button{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.03em;
+    color:rgba(246,243,236,.72);background:rgba(8,24,18,.4);border:1px solid rgba(246,243,236,.28);
+    padding:8px 16px;border-radius:100px;cursor:pointer;transition:.2s;backdrop-filter:blur(6px)}
+  .s-dots button:hover{color:#fff;border-color:rgba(246,243,236,.6)}
+  .s-dots button[aria-current="true"]{background:var(--accent);border-color:var(--accent);
+    color:#221200}
+  @media(max-width:760px){.s-arrow{display:none}
+    .s-dots{gap:7px}.s-dots button{padding:7px 12px;font-size:11px}}
+
+  /* trust strip */
+  .trust-strip{background:var(--surface);border-bottom:1px solid var(--line)}
+  .trust-strip .wrap{display:flex;gap:38px;justify-content:center;flex-wrap:wrap;
+    padding-top:20px;padding-bottom:20px}
+  .trust-strip .ti{display:flex;align-items:baseline;gap:9px}
+  .trust-strip .ti b{font-family:var(--serif);font-size:18px;color:var(--brand)}
+  .trust-strip .ti span{font-size:13px;color:var(--muted)}
 
   /* Principal / meet the solicitor */
   .principal{background:var(--surface)}
@@ -276,31 +310,100 @@
 
 <main id="top">
 
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <div class="eyebrow">Stockport Solicitors · SRA Regulated</div>
-        <h1>Straightforward legal advice, <em>when life gets complicated.</em></h1>
-        <p class="lead">Plain-English guidance from a modern Stockport law firm. We handle the detail and keep you informed at every step — so you always know where you stand.</p>
-        <div class="hero-actions">
-          <a href="#contact" class="btn btn-primary">Book a free consultation</a>
-          <a href="tel:01616692400" class="btn btn-ghost">☎ Call 0161 669 2400</a>
-        </div>
-        <div class="trust">
-          <div class="ti"><b>SRA</b><span>Regulated &amp; authorised</span></div>
-          <div class="ti"><b>Est. 2023</b><span>Independent firm</span></div>
-          <div class="ti"><b>Stockport</b><span>Serving Greater Manchester</span></div>
-        </div>
-      </div>
-      <figure class="hero-photo">
-        <img src="assets/hero.jpg" alt="Principal solicitor of Lexi Law outside The Law Society, London" loading="eager">
-        <figcaption class="cred-card">
-          <span class="cc-k">Principal Solicitor</span>
-          <span class="cc-v">Admitted at The Law&nbsp;Society, London</span>
-        </figcaption>
-      </figure>
+  <section class="hero-slider" id="top" aria-roledescription="carousel" aria-label="Lexi Law — services">
+    <div class="slides">
+
+      <article class="slide active" aria-roledescription="slide" aria-label="1 of 5: Welcome">
+        <div class="bg" style="background-image:url('assets/hero.jpg')"></div>
+        <div class="scrim"></div>
+        <div class="content"><div class="wrap"><div class="inner">
+          <div class="s-eyebrow">Stockport Solicitors · SRA Regulated</div>
+          <h1>Straightforward legal advice, <em>when life gets complicated.</em></h1>
+          <p>Plain-English guidance from a modern Stockport law firm. We handle the detail and keep you informed at every step — so you always know where you stand.</p>
+          <div class="slide-actions">
+            <a href="#contact" class="btn btn-light">Book a free consultation</a>
+            <a href="tel:01616692400" class="btn btn-outline">☎ Call 0161 669 2400</a>
+          </div>
+        </div></div></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="2 of 5: Family &amp; Matrimonial" hidden>
+        <div class="bg" style="background-image:url('assets/desk.jpg')"></div>
+        <div class="scrim"></div>
+        <div class="content"><div class="wrap"><div class="inner">
+          <div class="s-eyebrow">Family &amp; Matrimonial</div>
+          <h1>Guiding you through <em>life's hardest decisions.</em></h1>
+          <p>Divorce, separation, arrangements for children and financial settlements — handled with care, discretion and a steady hand when you need it most.</p>
+          <div class="slide-actions">
+            <a href="#services" class="btn btn-light">Family &amp; Matrimonial →</a>
+            <a href="#contact" class="btn btn-outline">Speak to a solicitor</a>
+          </div>
+        </div></div></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="3 of 5: Immigration" hidden>
+        <div class="bg" style="background-image:url('assets/hall.jpg')"></div>
+        <div class="scrim"></div>
+        <div class="content"><div class="wrap"><div class="inner">
+          <div class="s-eyebrow">Immigration</div>
+          <h1>Your future, <em>in trusted hands.</em></h1>
+          <p>Visas, settlement, applications and appeals — practical, up-to-date advice to help you and your family stay on the right path.</p>
+          <div class="slide-actions">
+            <a href="#services" class="btn btn-light">Immigration →</a>
+            <a href="#contact" class="btn btn-outline">Speak to a solicitor</a>
+          </div>
+        </div></div></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="4 of 5: Landlord &amp; Tenant" hidden>
+        <div class="bg" style="background-image:url('assets/admission.jpg')"></div>
+        <div class="scrim"></div>
+        <div class="content"><div class="wrap"><div class="inner">
+          <div class="s-eyebrow">Landlord &amp; Tenant</div>
+          <h1>Protecting your <em>property and your rights.</em></h1>
+          <p>Residential and commercial leases, disputes, deposits and evictions — done properly, for landlords and tenants alike.</p>
+          <div class="slide-actions">
+            <a href="#services" class="btn btn-light">Landlord &amp; Tenant →</a>
+            <a href="#contact" class="btn btn-outline">Speak to a solicitor</a>
+          </div>
+        </div></div></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="5 of 5: Personal Injury" hidden>
+        <div class="bg" style="background-image:url('assets/court.jpg')"></div>
+        <div class="scrim"></div>
+        <div class="content"><div class="wrap"><div class="inner">
+          <div class="s-eyebrow">Personal Injury</div>
+          <h1>Injured through <em>no fault of your own?</em></h1>
+          <p>Accidents, medical negligence and injuries caused by someone else — we fight for the compensation you're entitled to, with honest advice on your chances.</p>
+          <div class="slide-actions">
+            <a href="#services" class="btn btn-light">Personal Injury →</a>
+            <a href="#contact" class="btn btn-outline">Speak to a solicitor</a>
+          </div>
+        </div></div></div>
+      </article>
+
+    </div>
+
+    <button class="s-arrow prev" id="sPrev" aria-label="Previous slide">‹</button>
+    <button class="s-arrow next" id="sNext" aria-label="Next slide">›</button>
+    <div class="s-dots" id="sDots" role="tablist" aria-label="Choose a service">
+      <button aria-current="true">Welcome</button>
+      <button>Family</button>
+      <button>Immigration</button>
+      <button>Landlord &amp; Tenant</button>
+      <button>Personal Injury</button>
     </div>
   </section>
+
+  <div class="trust-strip">
+    <div class="wrap">
+      <div class="ti"><b>SRA</b><span>Regulated &amp; authorised</span></div>
+      <div class="ti"><b>Est. 2023</b><span>Independent Stockport firm</span></div>
+      <div class="ti"><b>1:1</b><span>Personal case handling</span></div>
+      <div class="ti"><b>Free</b><span>Initial consultation</span></div>
+    </div>
+  </div>
 
   <section class="areas" id="services">
     <div class="wrap">
@@ -527,6 +630,44 @@
     var next = current()==='dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
   }); }
+
+  /* Hero slider */
+  (function(){
+    var slider=document.querySelector('.hero-slider'); if(!slider) return;
+    var slides=[].slice.call(slider.querySelectorAll('.slide'));
+    var dots=[].slice.call(document.querySelectorAll('#sDots button'));
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var i=0, timer=null, DELAY=6000;
+    function show(n){
+      n=(n+slides.length)%slides.length;
+      slides[i].classList.remove('active'); slides[i].hidden=true;
+      dots[i]&&dots[i].setAttribute('aria-current','false');
+      i=n;
+      slides[i].hidden=false;
+      /* force reflow so the entry animation restarts */
+      void slides[i].offsetWidth;
+      slides[i].classList.add('active');
+      dots[i]&&dots[i].setAttribute('aria-current','true');
+    }
+    function next(){show(i+1)} function prev(){show(i-1)}
+    function play(){ if(reduce) return; stop(); timer=setInterval(next,DELAY); }
+    function stop(){ if(timer){clearInterval(timer);timer=null;} }
+    document.getElementById('sNext').addEventListener('click',function(){next();play();});
+    document.getElementById('sPrev').addEventListener('click',function(){prev();play();});
+    dots.forEach(function(d,idx){d.addEventListener('click',function(){show(idx);play();});});
+    slider.addEventListener('mouseenter',stop); slider.addEventListener('mouseleave',play);
+    slider.addEventListener('focusin',stop); slider.addEventListener('focusout',play);
+    document.addEventListener('visibilitychange',function(){document.hidden?stop():play();});
+    slider.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'){next();play();} if(e.key==='ArrowLeft'){prev();play();}});
+    /* touch swipe */
+    var x0=null;
+    slider.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;stop();},{passive:true});
+    slider.addEventListener('touchend',function(e){
+      if(x0===null) return; var dx=e.changedTouches[0].clientX-x0;
+      if(Math.abs(dx)>44){dx<0?next():prev();} x0=null; play();},{passive:true});
+    play();
+  })();
 
   /* Contact form (mockup) */
   var form=document.getElementById('contactform');
