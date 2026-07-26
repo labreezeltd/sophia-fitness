@@ -6,6 +6,23 @@ Matrimonial, Immigration, Landlord & Tenant, and Personal Injury law.
 
 Open `index.html` in any browser — no build step, no dependencies.
 
+## Homepage sections (top → bottom)
+1. **Hero services slider** — auto-advancing banner cycling through Welcome + all four
+   practice areas (arrows, labelled tabs, swipe, keyboard, Ken Burns, reduced-motion aware).
+2. **Trust strip** — SRA · Est. 2023 · 1:1 handling · Free consultation.
+3. **Services** — the four practice-area cards.
+4. **Video advert** — poster + play button opening a modal (placeholder for a YouTube/Vimeo/MP4 embed).
+5. **Our approach** and **How it works** (3 steps).
+6. **Meet your solicitor** — principal photos, bio, credentials gallery.
+7. **Reviews** — testimonial cards (placeholder — replace with genuine client feedback).
+8. **Client care** commitments.
+9. **Book an appointment** — In-person / Phone / Zoom selector + a working month calendar
+   (weekdays selectable) and time slots. A mockup: wire to Calendly, Google Calendar or Zoom to go live.
+10. **News & insights** — blog cards (immigration / family / landlord & tenant updates).
+11. **Social feed** — post grid linking to the firm's Facebook.
+12. **Contact** — details + enquiry form.
+13. **Footer** — SRA disclosure, address, company info.
+
 ## Concept — "Plain English"
 The brief for a young high-street firm is **trust and clarity**, not flash. The
 design deliberately avoids the navy-and-gold lawyer cliché:
