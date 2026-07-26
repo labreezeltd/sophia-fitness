@@ -5,6 +5,8 @@ Stockport solicitors (SRA no. 8006436, founded 2023), practising in Family &
 Matrimonial, Immigration, Landlord & Tenant, and Personal Injury law.
 
 Open `index.html` in any browser — no build step, no dependencies.
+`blog-post.html` is a reusable news/article template (the homepage "Read more"
+links point to it) — duplicate it per post and replace the text.
 
 ## Homepage sections (top → bottom)
 1. **Hero services slider** — auto-advancing banner cycling through Welcome + all four
